@@ -15,5 +15,25 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success'  => false,
+                    'message'  => 'Resource not found or invalid URL',
+                    'metadata' => (object) [],
+                    'data'     => [],
+                ], 404);
+            }
+        });
+
+        $exceptions->render(function (\Illuminate\Validation\ValidationException $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success'  => false,
+                    'message'  => $e->validator->errors()->first(),
+                    'metadata' => (object) [],
+                    'data'     => [],
+                ], 422);
+            }
+        });
     })->create();

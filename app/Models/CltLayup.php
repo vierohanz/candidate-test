@@ -13,6 +13,15 @@ class CltLayup extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($layup) {
+            $layup->layers()->delete();
+        });
+    }
+
     protected $table = 'clt_layups';
 
     protected $fillable = [

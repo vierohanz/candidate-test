@@ -12,8 +12,23 @@ class Supplier extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($supplier) {
+            $supplier->layups()->delete();
+        });
+    }
+
     protected $fillable = [
         'name',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     /**

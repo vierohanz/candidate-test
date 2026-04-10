@@ -89,13 +89,6 @@
         <x-sidebar-link route="activity-logs.index" icon="log">Activity Logs</x-sidebar-link>
     </nav>
 
-    {{-- User avatar at bottom (collapsed) --}}
-    <div x-cloak x-show="$store.ui.sidebarCollapsed"
-         class="mt-auto grid place-items-center pb-2">
-        <div class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[rgb(var(--brand))] to-[rgb(var(--brand-alt))] text-[11px] font-bold text-white shadow-md shadow-emerald-500/10 transition-transform hover:scale-105 cursor-pointer">
-            FA
-        </div>
-    </div>
 </aside>
 
 {{-- ── Main content area ────────────────────────────────────────────── --}}
@@ -182,15 +175,7 @@
                     </div>
                 </div>
 
-                {{-- User avatar --}}
-                <div class="hidden sm:flex items-center gap-2.5 rounded-2xl border border-[rgba(var(--text-main),0.08)] bg-[rgb(var(--card-bg))] px-2 py-1.5 cursor-pointer hover:border-[rgba(var(--brand),0.4)] transition-all duration-200">
-                    <div class="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[rgb(var(--brand))] to-[rgb(var(--accent-teal))] text-[10px] font-bold text-white flex-shrink-0">FA</div>
-                    <div class="hidden md:block pr-1">
-                        <p class="text-xs font-semibold text-[rgb(var(--text-main))] leading-tight">Ferra Alexandra</p>
-                        <p class="text-[10px] text-[rgb(var(--text-soft))] leading-tight">Administrator</p>
-                    </div>
                 </div>
-            </div>
         </div>
     </header>
 

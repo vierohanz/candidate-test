@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('clt_layups', function (Blueprint $table) {
@@ -17,7 +16,6 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            // A supplier cannot have two layups with the same name (used for conflict detection on import)
             $table->unique(['supplier_id', 'name']);
         });
     }
