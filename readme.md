@@ -1,3 +1,5 @@
+![SPEC Toolbox Structure](./public/spec-toolbox.gif)
+
 # Feature Test Assignment
 
 ## 1. Instructions
