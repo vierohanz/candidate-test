@@ -24,9 +24,9 @@ class CltLayer extends Model
 
     protected $casts = [
         'layer_order' => 'integer',
-        'thickness'   => 'decimal:4',
-        'width'       => 'decimal:4',
-        'angle'       => 'decimal:4',
+        'thickness'   => 'decimal:2',
+        'width'       => 'decimal:2',
+        'angle'       => 'decimal:2',
     ];
 
     /**

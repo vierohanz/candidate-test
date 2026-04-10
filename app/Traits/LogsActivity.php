@@ -35,7 +35,7 @@ trait LogsActivity
     private static function recordActivity(string $action, Model $model, ?array $before, ?array $after): void
     {
         $entityType = static::resolveEntityType();
-        $description = "[{$entityType}] {$action} — id:{$model->getKey()}";
+        $description = static::generateActivityDescription($action, $model, $before, $after);
 
         try {
             ActivityLog::create([
@@ -48,20 +48,55 @@ trait LogsActivity
                 'description' => $description,
             ]);
         } catch (\Throwable $e) {
-            // Never let logging failure break the main flow
             Log::error('ActivityLog write failed: ' . $e->getMessage());
         }
 
-        // Mirror to the application log file as well
-        Log::info($description, [
+        Log::info("[{$entityType}] {$action} — id:{$model->getKey()}", [
+            'description' => $description,
             'before' => $before,
             'after'  => $after,
         ]);
     }
 
+    private static function generateActivityDescription(string $action, Model $model, ?array $before, ?array $after): string
+    {
+        $type = ucfirst(str_replace('_', ' ', static::resolveEntityType()));
+        $name = $model->name ?? ($model->layer_order ? "Layer {$model->layer_order}" : 'Item');
+        
+        // Context enrichment (Supplier name for Layups, etc.)
+        $context = '';
+        if ($model instanceof \App\Models\CltLayup) {
+            $supplierName = $model->supplier->name ?? 'Unknown Supplier';
+            $context = " for Supplier [{$supplierName}]";
+        } elseif ($model instanceof \App\Models\CltLayer) {
+            $layupName = $model->layup->name ?? 'Unknown Layup';
+            $context = " in Layup [{$layupName}]";
+        }
+
+        if ($action === 'created') {
+            return "{$type} [{$name}] successfully created{$context}";
+        }
+
+        if ($action === 'deleted') {
+            return "{$type} [{$name}] successfully deleted{$context}";
+        }
+
+        if ($action === 'updated') {
+            $oldName = $before['name'] ?? $name;
+            $newName = $after['name'] ?? $name;
+
+            if (isset($after['name']) && isset($before['name'])) {
+                return "{$type} name changed from [{$oldName}] to [{$newName}]{$context}";
+            }
+
+            return "{$type} [{$name}] updated{$context}";
+        }
+
+        return "{$type} activity: {$action}{$context}";
+    }
+
     private static function resolveEntityType(): string
     {
-        // Map fully-qualified class name → human-readable entity slug
         $map = [
             \App\Models\Supplier::class => 'supplier',
             \App\Models\CltLayup::class => 'clt_layup',
