@@ -217,13 +217,15 @@
                     const url = `{{ url('/api/v1/suppliers') }}?page=${page}&q=${searchQuery}`;
                     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
                     const result = await res.json(); if (!result.success) throw new Error(result.message);
-                    sessionStorage.setItem(cacheKey, JSON.stringify(result));
-                    renderSuppliersDom(grid, result.data, result.metadata);
+                    const items = Array.isArray(result.data) ? result.data : [];
+                    const meta = result.metadata || { current_page: 1, per_page: 10, total_page: 1, total_row: 0 };
+                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...result, data: items, metadata: meta }));
+                    renderSuppliersDom(grid, items, meta);
                 } catch (e) { if (updateUI) grid.innerHTML = `<div class="col-span-full py-10 text-center text-red-500">${e.message}</div>`; }
             }
 
             function renderSuppliersDom(grid, data, meta) {
-                if (!data || data.length === 0) {
+                if (!Array.isArray(data) || data.length === 0) {
                     grid.innerHTML = `<div class="col-span-full py-20 text-center text-[rgb(var(--text-soft))]">
                         <svg class="w-10 h-10 opacity-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                         <span class="block font-medium text-lg">Data Not Found</span>
@@ -265,8 +267,32 @@
             }
             function showDrawer() { const d = document.getElementById('supplierDrawer'); d.classList.remove('hidden'); setTimeout(() => { document.getElementById('drawerBackdrop').classList.replace('opacity-0', 'opacity-100'); document.getElementById('drawerPanel').classList.replace('translate-x-full', 'translate-x-0'); }, 10); }
             function closeDrawer() { document.getElementById('drawerBackdrop').classList.replace('opacity-100', 'opacity-0'); document.getElementById('drawerPanel').classList.replace('translate-x-0', 'translate-x-full'); setTimeout(() => { document.getElementById('supplierDrawer').classList.add('hidden'); }, 300); }
-            function openCreateDrawer() { isEdit = false; document.getElementById('drawerTitle').innerText = 'Add Supplier'; document.getElementById('supplierForm').reset(); showDrawer(); }
-            function openEditDrawer(id, name) { isEdit = true; document.getElementById('drawerTitle').innerText = 'Edit Supplier'; document.getElementById('supplierId').value = id; document.getElementById('supplierName').value = name; showDrawer(); }
+            function openCreateDrawer() {
+                isEdit = false;
+                const title = document.getElementById('drawerTitle');
+                const form = document.getElementById('supplierForm');
+                const supplierId = document.getElementById('supplierId');
+                const supplierName = document.getElementById('supplierName');
+
+                if (title) title.innerText = 'Add Supplier';
+                if (form) form.reset();
+                if (supplierId) supplierId.value = '';
+                if (supplierName && !form) supplierName.value = '';
+
+                showDrawer();
+            }
+            function openEditDrawer(id, name) {
+                isEdit = true;
+                const title = document.getElementById('drawerTitle');
+                const supplierId = document.getElementById('supplierId');
+                const supplierName = document.getElementById('supplierName');
+
+                if (title) title.innerText = 'Edit Supplier';
+                if (supplierId) supplierId.value = id;
+                if (supplierName) supplierName.value = name;
+
+                showDrawer();
+            }
             async function saveSupplier(e) {
                 e.preventDefault(); const id = document.getElementById('supplierId').value, name = document.getElementById('supplierName').value, btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerText = 'Saving...';
                 const url = isEdit ? `{{ url('/api/v1/suppliers') }}/${id}/update` : `{{ url('/api/v1/suppliers') }}`; const method = isEdit ? 'PATCH' : 'POST';
@@ -477,6 +503,18 @@
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => fetchSuppliers(1), 1000);
             });
+            window.openCreateDrawer = openCreateDrawer;
+            window.openEditDrawer = openEditDrawer;
+            window.viewSupplier = viewSupplier;
+            window.exportSupplier = exportSupplier;
+            window.triggerImport = triggerImport;
+            window.deleteSupplier = deleteSupplier;
+            window.confirmImport = confirmImport;
+            window.closeDrawer = closeDrawer;
+            window.closeDetailModal = closeDetailModal;
+            window.closeConflictModal = closeConflictModal;
+            window.closeDeleteModal = closeDeleteModal;
+
             document.addEventListener('DOMContentLoaded', () => fetchSuppliers(1));
         </script>
     @endpush

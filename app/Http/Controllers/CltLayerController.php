@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CltLayerRequest;
+use App\Support\ApiPageCache;
 use App\Services\CltLayerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,12 +34,19 @@ class CltLayerController extends Controller
             return $this->errorResponse('Supplier ID and Layup ID are required.', 422);
         }
 
-        $layers = $this->layerService->getAll(
-            $request->get('get_q'),
-            $request->get('per_page', 10),
-            $sid,
-            $lid
-        );
+        $search = $request->get('get_q');
+        $perPage = (int) $request->get('per_page', 10);
+        $page = (int) $request->get('page', 1);
+
+        $layers = ApiPageCache::remember('layers', [
+            'supplier_id' => (int) $sid,
+            'layup_id' => (int) $lid,
+            'q' => $search,
+            'per_page' => $perPage,
+            'page' => $page,
+        ], 30, function () use ($search, $perPage, $sid, $lid) {
+            return $this->layerService->getAll($search, $perPage, $sid, $lid);
+        });
 
         $layers->setCollection(
             $layers->getCollection()->transform(fn($layer) => [
@@ -86,6 +94,7 @@ class CltLayerController extends Controller
     public function store(CltLayerRequest $request): JsonResponse
     {
         $this->layerService->create($request->validated());
+        ApiPageCache::bump(['layers', 'layups', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layer created successfully', 201);
     }
@@ -96,6 +105,7 @@ class CltLayerController extends Controller
         if (!$updated) {
             return $this->errorResponse('Layer not found', 404);
         }
+        ApiPageCache::bump(['layers', 'layups', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layer updated successfully');
     }
@@ -106,6 +116,7 @@ class CltLayerController extends Controller
         if (!$deleted) {
             return $this->errorResponse('Layer not found', 404);
         }
+        ApiPageCache::bump(['layers', 'layups', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layer removed successfully');
     }

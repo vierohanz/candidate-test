@@ -150,15 +150,19 @@
     @push('scripts')
         <script>
             let currentPage = 1, searchQuery = '', selectedSupplierId = '', isEdit = false;
+            let layupsRequestId = 0;
+            let layupsSuppliersRequestId = 0;
             async function fetchLayups(page = 1) {
                 currentPage = page; const tb = document.getElementById('layupsTableBody');
                 const cacheKey = `clt_layup_s${selectedSupplierId}_pg${page}_q${searchQuery}`;
                 const cached = sessionStorage.getItem(cacheKey);
+                const requestId = ++layupsRequestId;
 
                 if (cached) {
                     try {
                         const result = JSON.parse(cached);
                         if (!Array.isArray(result.data)) { sessionStorage.removeItem(cacheKey); throw new Error('stale_cache'); }
+                        if (requestId !== layupsRequestId) return;
                         renderLayupsDom(tb, result.data, result.metadata);
                         fetchLayupsData(page, tb, cacheKey, false);
                     } catch (e) {
@@ -181,19 +185,25 @@
             }
 
             async function fetchLayupsData(page, tb, cacheKey, updateUI) {
+                const requestId = layupsRequestId;
+                const supplierAtRequest = selectedSupplierId;
+                const queryAtRequest = searchQuery;
                 try {
-                    const sId = selectedSupplierId || 0;
-                    const url = `{{ url('/api/v1/layups') }}/${sId}?page=${page}&q=${searchQuery}`;
+                    const sId = supplierAtRequest || 0;
+                    const url = `{{ url('/api/v1/layups') }}/${sId}?page=${page}&q=${encodeURIComponent(queryAtRequest)}`;
                     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
                     const result = await res.json(); if (!result.success) throw new Error(result.message);
-                    sessionStorage.setItem(cacheKey, JSON.stringify(result));
+                    const items = Array.isArray(result.data) ? result.data : [];
+                    const meta = result.metadata || { current_page: 1, per_page: 10, total_page: 1, total_row: 0 };
+                    if (requestId !== layupsRequestId || supplierAtRequest !== selectedSupplierId || queryAtRequest !== searchQuery) return;
+                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...result, data: items, metadata: meta }));
                     if (!document.getElementById('layupsTableBody')) return;
-                    renderLayupsDom(tb, result.data, result.metadata);
-                } catch (e) { if (updateUI && document.getElementById('layupsTableBody')) tb.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-red-500">${e.message}</td></tr>`; }
+                    renderLayupsDom(tb, items, meta);
+                } catch (e) { if (updateUI && requestId === layupsRequestId && document.getElementById('layupsTableBody')) tb.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-red-500">${e.message}</td></tr>`; }
             }
 
             function renderLayupsDom(tb, data, meta) {
-                if (!data || data.length === 0) {
+                if (!Array.isArray(data) || data.length === 0) {
                     tb.innerHTML = `<tr><td colspan="5" class="text-center py-20 text-[rgb(var(--text-soft))]">
                                 <svg class="w-10 h-10 opacity-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                                 <span class="block font-medium text-lg">Data Not Found</span>
@@ -238,8 +248,10 @@
             }
 
             async function init() {
+                const requestId = ++layupsSuppliersRequestId;
                 const r = await fetch('{{ url('/api/v1/suppliers') }}?per_page=10');
                 const res = await r.json();
+                if (requestId !== layupsSuppliersRequestId) return;
 
                 const tabsContainer = document.getElementById('supplierTabs');
                 const formSelect = document.getElementById('formSupplierId');
@@ -265,8 +277,16 @@
             function openCreateDrawer() {
                 isEdit = false;
                 document.getElementById('drawerTitle').innerText = 'Add Layup';
-                document.getElementById('layupsForm').reset();
-                if (selectedSupplierId) document.getElementById('formSupplierId').value = selectedSupplierId;
+                const form = document.getElementById('layupsForm');
+                if (form && typeof form.reset === 'function') {
+                    form.reset();
+                } else {
+                    document.getElementById('layupId').value = '';
+                    document.getElementById('layupName').value = '';
+                }
+                if (selectedSupplierId && document.getElementById('formSupplierId')) {
+                    document.getElementById('formSupplierId').value = selectedSupplierId;
+                }
                 showDrawer();
             }
             function openEditDrawer(id, name, sid) { isEdit = true; document.getElementById('drawerTitle').innerText = 'Edit Layup'; document.getElementById('layupId').value = id; document.getElementById('layupName').value = name; document.getElementById('formSupplierId').value = sid; showDrawer(); }

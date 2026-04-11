@@ -1,60 +1,46 @@
 <x-app-layout title="Layers">
 
-    <div>
-        <h2 class="text-2xl font-semibold text-[rgb(var(--text-main))] mb-6">Technical Layers</h2>
-
-        <div class="flex items-center justify-between mb-10">
-            <div
-                class="flex items-center gap-4 bg-black/[0.03] p-1.5 rounded-2xl border border-[rgb(var(--line-color))] shadow-sm transition-all hover:border-[rgb(var(--line-color))/50]">
-                <div
-                    class="flex items-center px-5 py-2 hover:bg-black/[0.03] rounded-xl transition-colors group select-container">
-                    <div class="mr-6">
-                        <p
-                            class="text-[9px] font-black text-[rgb(var(--text-soft))] uppercase tracking-widest leading-none mb-1.5 flex items-center gap-1.5">
-                            <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
-                            Supplier Entity
-                        </p>
-                        <select id="supplierFilter" onchange="handleSupplierChange()"
-                            class="p-0 bg-transparent border-none text-[13px] font-bold text-[rgb(var(--text-main))] focus:ring-0 cursor-pointer min-w-[180px] appearance-none block outline-none"></select>
-                    </div>
-                    <svg class="w-3.5 h-3.5 text-[rgb(var(--text-soft))] group-hover:text-emerald-500 transition-colors pointer-events-none"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-width="3" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
-
-                <div class="h-8 w-px bg-[rgb(var(--line-color))] opacity-50"></div>
-
-                <div
-                    class="flex items-center px-5 py-2 hover:bg-black/[0.03] rounded-xl transition-colors group select-container">
-                    <div class="mr-6">
-                        <p
-                            class="text-[9px] font-black text-[rgb(var(--text-soft))] uppercase tracking-widest leading-none mb-1.5 flex items-center gap-1.5">
-                            <span class="w-1 h-1 rounded-full bg-blue-500"></span>
-                            Active Layup
-                        </p>
-                        <select id="layupFilter" onchange="handleLayupChange()"
-                            class="p-0 bg-transparent border-none text-[13px] font-bold text-[rgb(var(--text-main))] focus:ring-0 cursor-pointer min-w-[180px] appearance-none block outline-none"></select>
-                    </div>
-                    <svg class="w-3.5 h-3.5 text-[rgb(var(--text-soft))] group-hover:text-blue-500 transition-colors pointer-events-none"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-width="3" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
+    <div class="space-y-6">
+        <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div class="space-y-2">
+                <p class="text-[11px] font-black uppercase tracking-[0.24em] text-[rgb(var(--text-soft))]">Layer Workspace</p>
+                <h2 class="text-3xl font-black text-[rgb(var(--text-main))]">Technical Layers</h2>
+                <p class="max-w-2xl text-sm leading-6 text-[rgb(var(--text-soft))]">Pilih supplier dan layup aktif, lalu kelola urutan layer, thickness, width, dan angle dari satu tampilan yang lebih rapi.</p>
             </div>
-
-            <div class="flex items-center gap-3">
-                <button onclick="openCreateDrawer()"
-                    class="clt-btn-brand flex items-center gap-2 px-6 py-2.5 shadow-lg shadow-emerald-500/10">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-width="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    New Layer
-                </button>
-            </div>
+            <button onclick="openCreateDrawer()"
+                class="clt-btn-brand inline-flex items-center justify-center gap-2 px-6 py-3 shadow-lg shadow-emerald-500/10">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-width="2.5" d="M12 4v16m8-8H4" />
+                </svg>
+                New Layer
+            </button>
         </div>
 
-        <div class="w-full">
+        <section class="grid gap-4 lg:grid-cols-2">
+            <div class="clt-card p-5">
+                <p class="text-[11px] font-black uppercase tracking-[0.22em] text-[rgb(var(--text-soft))]">Supplier</p>
+                <div class="relative mt-4">
+                    <select id="supplierFilter" onchange="handleSupplierChange()"
+                        class="clt-pagination-select w-full rounded-[16px] px-4 py-3.5 pr-10 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[rgba(var(--brand),0.22)]"></select>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[rgb(var(--text-soft))]">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                </div>
+            </div>
+            <div class="clt-card p-5">
+                <p class="text-[11px] font-black uppercase tracking-[0.22em] text-[rgb(var(--text-soft))]">Layup</p>
+                <div class="relative mt-4">
+                    <select id="layupFilter" onchange="handleLayupChange()"
+                        class="clt-pagination-select w-full rounded-[16px] px-4 py-3.5 pr-10 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[rgba(var(--brand),0.22)]"></select>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[rgb(var(--text-soft))]">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="clt-card overflow-hidden p-0">
+            <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse ref-table transition-colors">
                 <thead>
                     <tr>
@@ -70,15 +56,16 @@
                 <tbody id="layersTableBody">
                 </tbody>
             </table>
-        </div>
+            </div>
+        </section>
 
-        <div class="flex items-center justify-between mt-6 px-4">
-            <p class="text-[11px] text-[rgb(var(--text-soft))]" id="paginationInfo">Showing 0 layers</p>
-            <div class="flex gap-1">
+        <div class="clt-pagination-shell flex flex-col gap-4 rounded-[18px] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <p class="text-sm text-[rgb(var(--text-soft))]" id="paginationInfo">Showing 0 layers</p>
+            <div class="flex gap-2">
                 <button id="prevPageBtn" disabled
-                    class="clt-page-btn text-[rgb(var(--text-soft))] px-4 border border-[rgb(var(--line-color))] rounded-lg hover:border-[rgb(var(--text-soft))] transition-colors">Prev</button>
+                    class="clt-page-btn px-4">Prev</button>
                 <button id="nextPageBtn" disabled
-                    class="clt-page-btn text-[rgb(var(--text-soft))] px-4 border border-[rgb(var(--line-color))] rounded-lg hover:border-[rgb(var(--text-soft))] transition-colors">Next</button>
+                    class="clt-page-btn px-4">Next</button>
             </div>
         </div>
     </div>
@@ -192,9 +179,13 @@
     @push('scripts')
         <script>
             let currentPage = 1, selectedSupplierId = '', selectedLayupId = '', isEdit = false;
+            let layersRequestId = 0;
+            let layerSupplierRequestId = 0;
+            let layerLayupRequestId = 0;
             async function fetchLayers(page = 1) {
                 currentPage = page; const tb = document.getElementById('layersTableBody');
                 if (!tb) return;
+                const requestId = ++layersRequestId;
                 if (!selectedLayupId) {
                     tb.innerHTML = `<tr><td colspan="7" class="text-center py-20 text-[rgb(var(--text-soft))]">Please select a valid layup to view layers.</td></tr>`;
                     updatePagination({ current_page: 1, total_page: 1, total: 0 });
@@ -207,6 +198,7 @@
                     try {
                         const result = JSON.parse(cached);
                         if (!Array.isArray(result.data)) { sessionStorage.removeItem(cacheKey); throw new Error('stale_cache'); }
+                        if (requestId !== layersRequestId) return;
                         renderLayersDom(tb, result.data, result.metadata);
                         fetchLayersData(page, tb, cacheKey, false);
                     } catch (e) {
@@ -231,14 +223,20 @@
             }
 
             async function fetchLayersData(page, tb, cacheKey, updateUI) {
+                const requestId = layersRequestId;
+                const supplierAtRequest = selectedSupplierId;
+                const layupAtRequest = selectedLayupId;
                 try {
-                    const url = `{{ url('/api/v1/layers') }}/${selectedSupplierId}/${selectedLayupId}?page=${page}`;
+                    const url = `{{ url('/api/v1/layers') }}/${supplierAtRequest}/${layupAtRequest}?page=${page}`;
                     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
                     const result = await res.json(); if (!result.success) throw new Error(result.message);
-                    sessionStorage.setItem(cacheKey, JSON.stringify(result));
+                    const items = Array.isArray(result.data) ? result.data : [];
+                    const meta = result.metadata || { current_page: 1, per_page: 10, total_page: 1, total_row: 0 };
+                    if (requestId !== layersRequestId || supplierAtRequest !== selectedSupplierId || layupAtRequest !== selectedLayupId) return;
+                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...result, data: items, metadata: meta }));
                     if (!document.getElementById('layersTableBody')) return;
-                    renderLayersDom(tb, result.data, result.metadata);
-                } catch (e) { if (updateUI && document.getElementById('layersTableBody')) tb.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-red-500">${e.message}</td></tr>`; }
+                    renderLayersDom(tb, items, meta);
+                } catch (e) { if (updateUI && requestId === layersRequestId && document.getElementById('layersTableBody')) tb.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-red-500">${e.message}</td></tr>`; }
             }
 
             function clearLayersCache() {
@@ -247,7 +245,7 @@
             }
 
             function renderLayersDom(tb, data, meta) {
-                if (!data || data.length === 0) {
+                if (!Array.isArray(data) || data.length === 0) {
                     tb.innerHTML = `<tr><td colspan="7" class="text-center py-20 text-[rgb(var(--text-soft))]">
                                         <svg class="w-10 h-10 opacity-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                                         <span class="block font-medium text-lg">Data Not Found</span>
@@ -277,6 +275,12 @@
             }
             function updatePagination(meta) {
                 const prev = document.getElementById('prevPageBtn'), next = document.getElementById('nextPageBtn');
+                const total = Number(meta.total_row || 0);
+                const perPage = Number(meta.per_page || 10);
+                const current = Number(meta.current_page || 1);
+                const from = total ? ((current - 1) * perPage) + 1 : 0;
+                const to = total ? Math.min(current * perPage, total) : 0;
+                document.getElementById('paginationInfo').innerText = `Showing ${from}-${to} of ${total} layers`;
                 prev.disabled = meta.current_page <= 1; prev.onclick = () => fetchLayers(meta.current_page - 1);
                 next.disabled = meta.current_page >= meta.total_page; next.onclick = () => fetchLayers(meta.current_page + 1);
             }
@@ -287,6 +291,7 @@
             }
 
             async function loadSuppliers() {
+                const requestId = ++layerSupplierRequestId;
                 const cacheKey = 'clt_layer_suppliers';
                 let res;
                 const cached = sessionStorage.getItem(cacheKey);
@@ -300,6 +305,7 @@
                     sessionStorage.setItem(cacheKey, JSON.stringify(res));
                 }
                 const filter = document.getElementById('supplierFilter');
+                if (requestId !== layerSupplierRequestId) return;
                 if (!filter) return;
                 filter.innerHTML = '';
                 (res.data || []).forEach((s, ix) => {
@@ -309,6 +315,7 @@
             }
 
             async function loadLayups(sid) {
+                const requestId = ++layerLayupRequestId;
                 const cacheKey = `clt_layer_layups_s${sid}`;
                 let res;
                 const cached = sessionStorage.getItem(cacheKey);
@@ -323,6 +330,7 @@
                 }
                 const filter = document.getElementById('layupFilter');
                 const formSelect = document.getElementById('formLayupId');
+                if (requestId !== layerLayupRequestId || sid != selectedSupplierId) return;
                 if (!filter || !formSelect) return;
 
                 filter.innerHTML = '';
@@ -357,17 +365,46 @@
             function closeDrawer() { document.getElementById('drawerBackdrop').classList.replace('opacity-100', 'opacity-0'); document.getElementById('drawerPanel').classList.replace('translate-x-0', 'translate-x-full'); setTimeout(() => { document.getElementById('layerDrawer').classList.add('hidden'); }, 300); }
             function openCreateDrawer() {
                 isEdit = false;
-                document.getElementById('drawerTitle').innerText = 'New Technical Layer';
-                document.getElementById('layerId').value = '';
-                document.getElementById('formOrder').value = '';
-                document.getElementById('formAngle').value = '';
-                document.getElementById('formThickness').value = '';
-                document.getElementById('formWidth').value = '';
 
-                if (selectedLayupId) document.getElementById('formLayupId').value = selectedLayupId;
+                const title = document.getElementById('drawerTitle');
+                const layerId = document.getElementById('layerId');
+                const formLayupId = document.getElementById('formLayupId');
+                const formOrder = document.getElementById('formOrder');
+                const formAngle = document.getElementById('formAngle');
+                const formThickness = document.getElementById('formThickness');
+                const formWidth = document.getElementById('formWidth');
+
+                if (title) title.innerText = 'New Technical Layer';
+                if (layerId) layerId.value = '';
+                if (formOrder) formOrder.value = '';
+                if (formAngle) formAngle.value = '';
+                if (formThickness) formThickness.value = '';
+                if (formWidth) formWidth.value = '';
+                if (formLayupId && selectedLayupId) formLayupId.value = selectedLayupId;
+
                 showDrawer();
             }
-            function openEditDrawer(l) { isEdit = true; document.getElementById('drawerTitle').innerText = 'Edit Layer'; document.getElementById('layerId').value = l.id; document.getElementById('formLayupId').value = l.layup_id; document.getElementById('formOrder').value = l.layer_order; document.getElementById('formAngle').value = l.angle; document.getElementById('formThickness').value = l.thickness; document.getElementById('formWidth').value = l.width; showDrawer(); }
+            function openEditDrawer(l) {
+                isEdit = true;
+
+                const title = document.getElementById('drawerTitle');
+                const layerId = document.getElementById('layerId');
+                const formLayupId = document.getElementById('formLayupId');
+                const formOrder = document.getElementById('formOrder');
+                const formAngle = document.getElementById('formAngle');
+                const formThickness = document.getElementById('formThickness');
+                const formWidth = document.getElementById('formWidth');
+
+                if (title) title.innerText = 'Edit Layer';
+                if (layerId) layerId.value = l.id ?? '';
+                if (formLayupId) formLayupId.value = l.layup_id ?? '';
+                if (formOrder) formOrder.value = l.layer_order ?? '';
+                if (formAngle) formAngle.value = l.angle ?? '';
+                if (formThickness) formThickness.value = l.thickness ?? '';
+                if (formWidth) formWidth.value = l.width ?? '';
+
+                showDrawer();
+            }
             async function saveLayer(e) { e.preventDefault(); const lid = document.getElementById('formLayupId').value, id = document.getElementById('layerId').value, btn = document.getElementById('submitBtn'); const data = { layup_id: lid, layer_order: document.getElementById('formOrder').value, thickness: document.getElementById('formThickness').value, width: document.getElementById('formWidth').value, angle: document.getElementById('formAngle').value }; btn.disabled = true; btn.innerText = 'Saving...'; const url = isEdit ? `{{url('/api/v1/layers')}}/${id}/update` : `{{url('/api/v1/layers')}}`; const method = isEdit ? 'PUT' : 'POST'; try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{csrf_token()}}' }, body: JSON.stringify(data) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); showToast(isEdit ? 'Updated' : 'Created'); closeDrawer(); clearLayersCache(); fetchLayers(currentPage); } catch (err) { showToast(err.message); } finally { btn.disabled = false; btn.innerText = 'Save'; } }
             async function viewLayer(id) {
                 const r = await fetch(`{{url('/api/v1/layers')}}/${id}/show`);
@@ -440,6 +477,16 @@
                 setTimeout(() => { document.getElementById('deleteModal').classList.add('hidden'); }, 300);
             }
             function showToast(m) { const t = document.getElementById('toast'); document.getElementById('toastMsg').innerText = m; t.classList.replace('opacity-0', 'opacity-100'); t.classList.replace('translate-y-4', 'translate-y-0'); setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); t.classList.replace('translate-y-0', 'translate-y-4'); }, 3000); }
+            window.openCreateDrawer = openCreateDrawer;
+            window.openEditDrawer = openEditDrawer;
+            window.viewLayer = viewLayer;
+            window.deleteLayer = deleteLayer;
+            window.closeDrawer = closeDrawer;
+            window.closeDetailModal = closeDetailModal;
+            window.closeDeleteModal = closeDeleteModal;
+            window.handleSupplierChange = handleSupplierChange;
+            window.handleLayupChange = handleLayupChange;
+
             document.addEventListener('DOMContentLoaded', init);
         </script>
     @endpush

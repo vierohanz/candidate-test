@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CltLayupRequest;
+use App\Support\ApiPageCache;
 use App\Services\CltLayupService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,11 +29,18 @@ class CltLayupController extends Controller
             return $this->errorResponse('Supplier not found', 422);
         }
 
-        $layups = $this->layupService->getAll(
-            $request->get('q'),
-            $request->get('per_page', 10),
-            $supplierId
-        );
+        $search = $request->get('q');
+        $perPage = (int) $request->get('per_page', 10);
+        $page = (int) $request->get('page', 1);
+
+        $layups = ApiPageCache::remember('layups', [
+            'supplier_id' => (int) $supplierId,
+            'q' => $search,
+            'per_page' => $perPage,
+            'page' => $page,
+        ], 30, function () use ($search, $perPage, $supplierId) {
+            return $this->layupService->getAll($search, $perPage, $supplierId);
+        });
 
         $layups->setCollection(
             $layups->getCollection()->transform(fn($layup) => [
@@ -75,6 +83,7 @@ class CltLayupController extends Controller
     public function store(CltLayupRequest $request): JsonResponse
     {
         $this->layupService->create($request->validated());
+        ApiPageCache::bump(['layups', 'layers', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layup created successfully', 201);
     }
@@ -85,6 +94,7 @@ class CltLayupController extends Controller
         if (!$updated) {
             return $this->errorResponse('Layup not found', 404);
         }
+        ApiPageCache::bump(['layups', 'layers', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layup updated successfully');
     }
@@ -95,6 +105,7 @@ class CltLayupController extends Controller
         if (!$deleted) {
             return $this->errorResponse('Layup not found', 404);
         }
+        ApiPageCache::bump(['layups', 'layers', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layup deleted successfully');
     }

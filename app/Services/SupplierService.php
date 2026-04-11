@@ -57,6 +57,12 @@ class SupplierService
         }
 
         return [
+            'supplier' => [
+                'id'         => $supplier->id,
+                'name'       => $supplier->name,
+                'created_at' => $supplier->created_at,
+                'updated_at' => $supplier->updated_at,
+            ],
             'layups' => $supplier->layups->map(fn($layup) => [
                 'name'   => $layup->name,
                 'layers' => $layup->layers->map(fn($layer) => [

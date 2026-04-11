@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SupplierRequest;
 use App\Services\SupplierService;
+use App\Support\ApiPageCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,10 +23,17 @@ class SupplierController extends Controller
             return view('suppliers.index');
         }
 
-        $suppliers = $this->supplierService->getAllSuppliers(
-            $request->get('q'),
-            $request->get('per_page', 10)
-        );
+        $search = $request->get('q');
+        $perPage = (int) $request->get('per_page', 10);
+        $page = (int) $request->get('page', 1);
+
+        $suppliers = ApiPageCache::remember('suppliers', [
+            'q' => $search,
+            'per_page' => $perPage,
+            'page' => $page,
+        ], 30, function () use ($search, $perPage) {
+            return $this->supplierService->getAllSuppliers($search, $perPage);
+        });
 
         $suppliers->setCollection(
             $suppliers->getCollection()->transform(fn($s) => [
@@ -40,6 +48,7 @@ class SupplierController extends Controller
     public function store(SupplierRequest $request): JsonResponse
     {
         $this->supplierService->createSupplier($request->validated());
+        ApiPageCache::bump(['suppliers', 'dashboard', 'activity_logs', 'layups', 'layers']);
 
         return $this->successResponse(null, 'Supplier created successfully', 201);
     }
@@ -64,6 +73,7 @@ class SupplierController extends Controller
         if (!$updated) {
             return $this->errorResponse('Supplier not found', 404);
         }
+        ApiPageCache::bump(['suppliers', 'dashboard', 'activity_logs', 'layups', 'layers']);
 
         return $this->successResponse(null, 'Supplier updated successfully');
     }
@@ -74,6 +84,7 @@ class SupplierController extends Controller
         if (!$deleted) {
             return $this->errorResponse('Supplier not found', 404);
         }
+        ApiPageCache::bump(['suppliers', 'dashboard', 'activity_logs', 'layups', 'layers']);
 
         return $this->successResponse(null, 'Supplier deleted successfully');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use App\Services\ImportService;
+use App\Support\ApiPageCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -89,6 +90,7 @@ class ImportController extends Controller
                 $request->input('import_token'),
                 $request->input('strategy')
             );
+            ApiPageCache::bump(['suppliers', 'layups', 'layers', 'dashboard', 'activity_logs']);
 
             return $this->successResponse(
                 $summary,
