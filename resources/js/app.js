@@ -37,3 +37,16 @@ Alpine.store('ui', {
 });
 
 Alpine.start();
+
+document.addEventListener('click', (event) => {
+    const bounceTarget = event.target.closest('[data-bounce-click]');
+    if (!bounceTarget) return;
+
+    bounceTarget.classList.remove('tap-bounce-active');
+    void bounceTarget.offsetWidth;
+    bounceTarget.classList.add('tap-bounce-active');
+
+    window.setTimeout(() => {
+        bounceTarget.classList.remove('tap-bounce-active');
+    }, 280);
+});

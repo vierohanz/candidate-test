@@ -6,12 +6,12 @@
         <!-- Controls row -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div class="relative w-full sm:w-80">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[rgb(var(--text-soft))]">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-[rgb(var(--text-soft))]">
+                    <svg class="h-4 w-4 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </span>
-                <input type="text" id="searchInput" placeholder="Search by name..." class="ref-input w-full pl-9">
+                <input type="text" id="searchInput" placeholder="Search by name..." class="ref-input w-full h-10 pl-11 text-[13px]">
             </div>
 
             <div class="flex items-center gap-3">
@@ -68,27 +68,6 @@
                         </div>
                         <button type="submit" id="submitBtn" class="clt-btn-brand w-full mt-4">Save Changes</button>
                     </form>
-
-                    <div id="drawerImportSection" class="mt-10 pt-6 border-t border-[rgb(var(--line-color))] hidden">
-                        <p class="text-[10px] font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest mb-4">Advanced Actions</p>
-                        <button onclick="suppliers.triggerImport(document.getElementById('supplierId').value)" 
-                                class="w-full flex items-center justify-between p-4 bg-orange-500/5 border border-orange-500/10 rounded-2xl hover:bg-orange-500/10 transition-all group">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-xl bg-orange-500/20 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                                    </svg>
-                                </div>
-                                <div class="text-left">
-                                    <p class="text-sm font-bold text-[rgb(var(--text-main))]">Import JSON</p>
-                                    <p class="text-[10px] text-[rgb(var(--text-soft))]">Merge external layup data</p>
-                                </div>
-                            </div>
-                            <svg class="w-4 h-4 text-[rgb(var(--text-soft))] group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

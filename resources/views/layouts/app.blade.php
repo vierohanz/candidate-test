@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>{{ $title ?? 'Dashboard' }} — CLT Manager</title>
 
     <style>
@@ -223,139 +226,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             refreshNotifications();
-        });
-
-        let _navController = null;
-        let _navRequestId = 0;
-        const _pageCache = new Map();
-        const _pageCacheTtl = 30000;
-
-        function setPageLoading(isLoading) {
-            document.body.classList.toggle('page-shell-loading', isLoading);
-        }
-
-        function getCachedPage(url) {
-            const cached = _pageCache.get(url);
-            if (!cached) return null;
-            if ((Date.now() - cached.ts) > _pageCacheTtl) {
-                _pageCache.delete(url);
-                return null;
-            }
-            return cached.html;
-        }
-
-        function cachePage(url, html) {
-            _pageCache.set(url, { html, ts: Date.now() });
-        }
-
-        function patchPageScripts(container) {
-            Array.from(container.querySelectorAll('script')).forEach((oldScript) => {
-                const newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach((attr) => newScript.setAttribute(attr.name, attr.value));
-
-                if (oldScript.src) {
-                    newScript.src = oldScript.src;
-                } else {
-                    const prefix = "(() => { const _origAEL = document.addEventListener; document.addEventListener = function(t, l, o) { if (t === 'DOMContentLoaded') { setTimeout(() => { try { l.call(document, new Event('DOMContentLoaded')); } catch (_) {} }, 1); } else { return _origAEL.call(document, t, l, o); } }; try {\n";
-                    const suffix = "\n} finally { document.addEventListener = _origAEL; } })();";
-                    newScript.text = prefix + oldScript.text + suffix;
-                }
-
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
-        }
-
-        function applyPageHtml(url, html, options = {}) {
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            const targetMain = document.getElementById('pjax-container');
-            const sourceMain = doc.getElementById('pjax-container');
-            const sourceBreadcrumb = doc.getElementById('breadcrumb');
-            const targetBreadcrumb = document.getElementById('breadcrumb');
-
-            if (!targetMain || !sourceMain) {
-                window.location.href = url;
-                return false;
-            }
-
-            document.title = doc.title;
-            targetMain.innerHTML = sourceMain.innerHTML;
-            if (sourceBreadcrumb && targetBreadcrumb) targetBreadcrumb.innerHTML = sourceBreadcrumb.innerHTML;
-
-            patchPageScripts(targetMain);
-
-            document.querySelectorAll('.fixed.inset-0.z-50, .fixed.inset-0.z-\\[100\\], .fixed.inset-0.z-\\[120\\]').forEach((el) => el.classList.add('hidden'));
-            document.getElementById('notificationDropdown')?.classList.add('hidden');
-            targetMain.parentElement.scrollTop = 0;
-
-            if (options.pushState !== false) {
-                history.pushState({}, '', url);
-            }
-
-            return true;
-        }
-
-        async function navigateTo(url, options = {}) {
-            if (!url || url === window.location.href) return;
-
-            const requestId = ++_navRequestId;
-            if (_navController) _navController.abort();
-            _navController = new AbortController();
-
-            const cachedHtml = getCachedPage(url);
-            if (cachedHtml) {
-                applyPageHtml(url, cachedHtml, options);
-                setPageLoading(false);
-                refreshNotifications();
-                return;
-            }
-
-            setPageLoading(true);
-
-            try {
-                const response = await fetch(url, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    signal: _navController.signal,
-                });
-
-                if (!response.ok) throw new Error(`Navigation failed: ${response.status}`);
-                const html = await response.text();
-                if (requestId !== _navRequestId) return;
-
-                cachePage(url, html);
-                const applied = applyPageHtml(url, html, options);
-                if (applied) refreshNotifications();
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    window.location.href = url;
-                }
-            } finally {
-                if (requestId === _navRequestId) {
-                    setPageLoading(false);
-                    _navController = null;
-                }
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a.sidebar-link');
-            if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
-
-            const href = link.getAttribute('href');
-            if (!href) return;
-
-            const url = new URL(href, window.location.origin);
-            if (url.origin !== window.location.origin) return;
-
-            e.preventDefault();
-
-            document.querySelectorAll('a.sidebar-link').forEach((item) => item.classList.remove('active'));
-            link.classList.add('active');
-
-            navigateTo(url.toString());
-        });
-
-        window.addEventListener('popstate', () => {
-            navigateTo(window.location.href, { pushState: false });
         });
 
         let _toastTimer = null;

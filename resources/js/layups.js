@@ -14,6 +14,27 @@
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.content
     };
 
+    const getSupplierChipClass = (active = false) => [
+        'group',
+        'inline-flex',
+        'min-w-[160px]',
+        'h-12',
+        'rounded-xl',
+        'border',
+        'px-4',
+        'text-center',
+        'transition-all',
+        'duration-200',
+        'items-center',
+        'justify-center',
+        'text-[12px]',
+        'font-semibold',
+        'tracking-[0.02em]',
+        active
+            ? 'border-emerald-400 bg-emerald-500 text-white shadow-[0_10px_22px_rgba(16,185,129,0.18)]'
+            : 'border-[rgb(var(--line-color))] bg-[rgb(var(--card-bg))] text-[rgb(var(--text-soft))] hover:-translate-y-0.5 hover:border-emerald-300/70 hover:text-white'
+    ].join(' ');
+
     const fetchLayups = async (page = 1) => {
         currentPage = page;
         const tb = document.getElementById('layupsTableBody');
@@ -111,8 +132,10 @@
 
     const setSupplierFilter = (id, btnRef) => {
         selectedSupplierId = id;
-        document.querySelectorAll('#supplierTabs .top-pill').forEach(el => el.classList.remove('active'));
-        if (btnRef) btnRef.classList.add('active');
+        document.querySelectorAll('#supplierTabs button[data-supplier-chip]').forEach(el => {
+            el.className = getSupplierChipClass(false);
+        });
+        if (btnRef) btnRef.className = getSupplierChipClass(true);
         fetchLayups(1);
     };
 
@@ -149,7 +172,9 @@
 
         (res.data || []).forEach((s, ix) => {
             const btn = document.createElement('button');
-            btn.className = 'top-pill' + (ix === 0 ? ' active' : '');
+            btn.type = 'button';
+            btn.dataset.supplierChip = 'true';
+            btn.className = getSupplierChipClass(ix === 0);
             btn.innerText = s.name;
             btn.onclick = function () { layups.setSupplierFilter(s.id, this); };
             tabsContainer.appendChild(btn);
@@ -379,6 +404,8 @@
         init: init,
         showDrawer,
         closeDrawer,
+        closeDetailModal: window.closeDetailModal,
+        closeDeleteModal: window.closeDeleteModal,
         openCreateDrawer,
         openEditDrawer,
         saveLayup,
