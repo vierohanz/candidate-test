@@ -117,7 +117,7 @@ class ImportService
     /**
      * Phase 2: Actual Import Execution with chosen strategy using cached token.
      */
-    public function execute(int $supplierId, string $token, string $strategy = 'skip'): array
+    public function execute(int $supplierId, string $token, string $strategy = 'skip', array $resolutions = []): array
     {
         $supplier = Supplier::findOrFail($supplierId);
         $data = Cache::get("import_data_{$token}");
@@ -135,7 +135,7 @@ class ImportService
             'layers_skipped' => 0,
         ];
 
-        DB::transaction(function () use ($supplier, $data, $strategy, &$summary) {
+        DB::transaction(function () use ($supplier, $data, $strategy, $resolutions, &$summary) {
             $layups = $data['layups'] ?? [];
 
             foreach ($layups as $layupData) {
@@ -150,15 +150,19 @@ class ImportService
                     ->first();
 
                 if ($existingLayup) {
-                    if ($strategy === 'skip') {
-                        $summary['layups_skipped']++;
-                        $currentLayup = $existingLayup;
-                        // For skip strategy, we don't return/continue if we want to process layers
-                        // but the user said "layup bisa di-update kalau sudah ada".
-                        // If we skip layup, we should still try to insert NEW layers or check existing ones.
-                    } else {
+                    if ($strategy === 'duplicate') {
+                        $duplicateName = $layupName . ' (Imported)';
+                        $currentLayup = CltLayup::create([
+                            'supplier_id' => $supplier->id,
+                            'name' => $duplicateName,
+                        ]);
+                        $summary['layups_created']++;
+                    } elseif ($strategy === 'overwrite') {
                         $existingLayup->update(['name' => $layupName]);
                         $summary['layups_updated']++;
+                        $currentLayup = $existingLayup;
+                    } else {
+                        $summary['layups_skipped']++;
                         $currentLayup = $existingLayup;
                     }
                 } else {
@@ -195,13 +199,34 @@ class ImportService
                             ($existingLayer->angle != $payload['angle']);
 
                         if ($isDifferent) {
-                            if ($strategy === 'skip') {
-                                $summary['layers_skipped']++;
+                            $resolutionKey = "{$layupName}_{$order}";
+                            $fieldsToUpdate = $resolutions[$resolutionKey] ?? null;
 
-                                continue;
+                            // Handle both legacy (bool/array of keys) and new (key => [fields]) formats
+                            // If strategy is overwrite, or if this key exists in a simple list, or if it has specific fields
+                            $shouldOverwriteAll = ($strategy === 'overwrite') || (is_numeric(array_search($resolutionKey, $resolutions)));
+
+                            if ($shouldOverwriteAll) {
+                                $existingLayer->update($payload);
+                                $summary['layers_updated']++;
+                            } elseif (is_array($fieldsToUpdate)) {
+                                // Field-level resolution
+                                $granularPayload = [];
+                                foreach ($fieldsToUpdate as $field) {
+                                    if (array_key_exists($field, $payload)) {
+                                        $granularPayload[$field] = $payload[$field];
+                                    }
+                                }
+
+                                if (! empty($granularPayload)) {
+                                    $existingLayer->update($granularPayload);
+                                    $summary['layers_updated']++;
+                                } else {
+                                    $summary['layers_skipped']++;
+                                }
+                            } else {
+                                $summary['layers_skipped']++;
                             }
-                            $existingLayer->update($payload);
-                            $summary['layers_updated']++;
                         } else {
                             $summary['layers_skipped']++;
                         }

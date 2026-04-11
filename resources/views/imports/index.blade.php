@@ -79,7 +79,7 @@
             </div>
 
             <div id="importResultsPanel" class="hidden space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div id="importSummaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="clt-card p-6 bg-gradient-to-br from-blue-500/[0.03] to-transparent">
                         <p class="text-[10px] font-bold text-[rgb(var(--text-soft))] uppercase tracking-[0.2em] mb-3">
                             Layups Detected</p>
@@ -174,8 +174,12 @@
                         <button id="importSkipBtn" onclick="confirmImportPage('skip')"
                             class="px-6 py-2.5 border border-[rgb(var(--line-color))] rounded-xl text-sm font-semibold text-[rgb(var(--text-main))] hover:border-[rgb(var(--text-soft))] transition-all">Keep
                             Existing (Skip)</button>
+                        <button id="importMergeBtn" onclick="confirmImportPage('granular')"
+                            class="px-6 py-2.5 border border-[rgb(var(--brand))] rounded-xl text-sm font-semibold text-[rgb(var(--brand))] hover:bg-[rgb(var(--brand))]/5 transition-all">Apply Selected</button>
+                        <button id="importDuplicateBtn" onclick="confirmImportPage('duplicate')"
+                            class="px-6 py-2.5 border border-blue-500/30 rounded-xl text-sm font-semibold text-blue-500 hover:bg-blue-500/5 transition-all">Duplicate Layup</button>
                         <button id="importOverwriteBtn" onclick="confirmImportPage('overwrite')"
-                            class="clt-btn-brand px-8 py-2.5 shadow-lg shadow-emerald-500/20">Overwrite & Merge</button>
+                            class="clt-btn-brand px-8 py-2.5 shadow-lg shadow-emerald-500/20">Overwrite All</button>
                     </div>
                 </div>
             </div>
@@ -222,10 +226,17 @@
                     document.getElementById('importResultsPanel').classList.remove('hidden');
 
                     if (result.data.auto_confirmed) {
+                        document.getElementById('scanStatusCard').classList.add('hidden');
+                        document.getElementById('importSummaryGrid').classList.add('hidden');
                         renderImportExecution(result.data.execution_summary);
                         window.showToast('Clean scan! Data imported automatically.', true);
                         return;
                     }
+
+                    // Reset visibility for manual confirm
+                    document.getElementById('scanStatusCard').classList.remove('hidden');
+                    document.getElementById('importSummaryGrid').classList.remove('hidden');
+                    document.getElementById('importExecutionCard').classList.add('hidden');
 
                     lastReport = result.data;
                     renderImportScan(result.data);
@@ -291,31 +302,42 @@
                     if (conflicts.length > 0) {
                         html += `<div class="space-y-4">`;
                         conflicts.forEach(c => {
-                            const isDiff = (a, b) => a != b ? 'text-amber-500 font-bold underline decoration-amber-500/50 underline-offset-4' : '';
+                            const isDiff = (f) => c.incoming[f] != c.existing[f];
+                            const key = `${c.layup_name}_${c.layer_order}`;
                             html += `
-                                            <div class="border border-[rgb(var(--line-color))] rounded-xl overflow-hidden">
-                                                <div class="bg-black/5 px-4 py-2 border-b border-[rgb(var(--line-color))]">
-                                                    <span class="text-[11px] font-black text-[rgb(var(--text-main))] uppercase">Layup: ${c.layup_name} — Order #${c.layer_order}</span>
-                                                </div>
-                                                <div class="grid grid-cols-2">
-                                                    <div class="p-4 border-r border-[rgb(var(--line-color))] bg-red-500/[0.02]">
-                                                        <p class="text-[8px] font-black text-red-500 uppercase tracking-widest mb-3">System</p>
-                                                        <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
-                                                            <div class="flex justify-between"><span>Thickness</span> <span class="font-mono">${c.existing.thickness}mm</span></div>
-                                                            <div class="flex justify-between"><span>Width</span> <span class="font-mono">${c.existing.width}mm</span></div>
-                                                            <div class="flex justify-between"><span>Angle</span> <span class="font-mono">${c.existing.angle}°</span></div>
+                                <div class="border border-[rgb(var(--line-color))] rounded-xl overflow-hidden shadow-sm transition-colors group">
+                                    <div class="bg-black/5 px-4 py-2 border-b border-[rgb(var(--line-color))] flex justify-between items-center">
+                                        <span class="text-[11px] font-bold text-[rgb(var(--text-main))] uppercase tracking-wide">Layup: ${c.layup_name} — Order #${c.layer_order}</span>
+                                        <span class="text-[9px] font-black text-[rgb(var(--text-soft))] uppercase tracking-widest">Select Properties to Update</span>
+                                    </div>
+                                    <div class="grid grid-cols-2">
+                                        <div class="p-4 border-r border-[rgb(var(--line-color))] bg-red-500/[0.02]">
+                                            <span class="text-[8px] font-bold text-red-500 uppercase tracking-widest block mb-3">System Record</span>
+                                            <div class="space-y-4 text-xs text-[rgb(var(--text-main))]">
+                                                <div class="flex justify-between items-center h-5"><span>Thickness</span> <span class="font-mono">${c.existing.thickness} mm</span></div>
+                                                <div class="flex justify-between items-center h-5"><span>Width</span> <span class="font-mono">${c.existing.width} mm</span></div>
+                                                <div class="flex justify-between items-center h-5"><span>Angle</span> <span class="font-mono">${c.existing.angle}°</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 bg-emerald-500/[0.02]">
+                                            <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-widest block mb-3">Incoming File</span>
+                                            <div class="space-y-4 text-xs text-[rgb(var(--text-main))]">
+                                                ${['thickness', 'width', 'angle'].map(f => `
+                                                    <div class="flex justify-between items-center h-5 ${isDiff(f) ? 'text-amber-500' : ''}">
+                                                        <span>${f.charAt(0).toUpperCase() + f.slice(1)}</span>
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="font-mono ${isDiff(f) ? 'font-bold underline decoration-amber-500/30' : ''}">${c.incoming[f]} ${f === 'angle' ? '°' : 'mm'}</span>
+                                                            ${isDiff(f) ? `
+                                                                <input type="checkbox" data-res-key="${key}" data-res-field="${f}" checked 
+                                                                    class="w-3.5 h-3.5 rounded border-emerald-500/30 bg-black/20 text-emerald-500 focus:ring-0 cursor-pointer">
+                                                            ` : `<div class="w-3.5"></div>`}
                                                         </div>
                                                     </div>
-                                                    <div class="p-4 bg-emerald-500/[0.02]">
-                                                        <p class="text-[8px] font-black text-emerald-500 uppercase tracking-widest mb-3">Incoming</p>
-                                                        <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
-                                                            <div class="flex justify-between"><span>Thickness</span> <span class="font-mono ${isDiff(c.incoming.thickness, c.existing.thickness)}">${c.incoming.thickness}mm</span></div>
-                                                            <div class="flex justify-between"><span>Width</span> <span class="font-mono ${isDiff(c.incoming.width, c.existing.width)}">${c.incoming.width}mm</span></div>
-                                                            <div class="flex justify-between"><span>Angle</span> <span class="font-mono ${isDiff(c.incoming.angle, c.existing.angle)}">${c.incoming.angle}°</span></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>`;
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
                         });
                         html += `</div>`;
                     }
@@ -326,9 +348,28 @@
 
             async function confirmImportPage(strategy) {
                 if (!importSupplierId || !importToken) return;
-                const btn = strategy === 'overwrite' ? document.getElementById('importOverwriteBtn') : document.getElementById('importSkipBtn');
+                const btnIdMap = {
+                    'skip': 'importSkipBtn',
+                    'overwrite': 'importOverwriteBtn',
+                    'granular': 'importMergeBtn',
+                    'duplicate': 'importDuplicateBtn'
+                };
+                const btn = document.getElementById(btnIdMap[strategy]);
+                if (!btn) return;
                 const originalText = btn.innerText;
-                btn.disabled = true; btn.innerText = 'Committing...';
+
+                const resolutions = {};
+                if (strategy === 'granular') {
+                    document.querySelectorAll('input[data-res-key]:checked').forEach(cb => {
+                        const key = cb.getAttribute('data-res-key');
+                        const field = cb.getAttribute('data-res-field');
+                        if (!resolutions[key]) resolutions[key] = [];
+                        resolutions[key].push(field);
+                    });
+                    if (Object.keys(resolutions).length === 0) return window.showToast('Select at least one property to apply', false);
+                }
+
+                btn.disabled = true; btn.innerText = 'Syncing...';
 
                 try {
                     const response = await fetch(`/api/v1/suppliers/${importSupplierId}/import/confirm`, {
@@ -338,12 +379,21 @@
                             Accept: 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
-                        body: JSON.stringify({ import_token: importToken, strategy })
+                        body: JSON.stringify({
+                            import_token: importToken,
+                            strategy: strategy === 'granular' ? 'granular' : strategy,
+                            resolutions: resolutions
+                        })
                     });
                     const result = await response.json();
                     if (!response.ok || !result.success) throw new Error(result.message || 'Import failed');
 
                     closeConflictModal();
+                    
+                    // Hide the scan status and summary grids after success
+                    document.getElementById('scanStatusCard').classList.add('hidden');
+                    document.getElementById('importSummaryGrid').classList.add('hidden');
+                    
                     renderImportExecution(result.data);
                     window.showToast('Import completed successfully', true);
 

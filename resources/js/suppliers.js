@@ -401,34 +401,46 @@
                         Parameter Differences Detected
                     </h4>`;
 
-            html += `<div class="space-y-4">`;
             data.layers.conflicts.forEach(c => {
-                const isDiff = (a, b) => a != b ? 'text-amber-500 font-bold underline decoration-amber-500/50 underline-offset-4' : '';
+                const isDiff = (f) => c.incoming[f] != c.existing[f];
+                const key = `${c.layup_name}_${c.layer_order}`;
+                
                 html += `
-                    <div class="border border-[rgb(var(--line-color))] rounded-xl overflow-hidden shadow-sm">
-                        <div class="bg-black/5 px-4 py-2 border-b border-[rgb(var(--line-color))] flex justify-between items-center transition-colors">
+                    <div class="border border-[rgb(var(--line-color))] rounded-xl overflow-hidden shadow-sm transition-colors group">
+                        <div class="bg-black/5 px-4 py-2 border-b border-[rgb(var(--line-color))] flex justify-between items-center">
                             <span class="text-[11px] font-bold text-[rgb(var(--text-main))] uppercase tracking-wide">Layup: ${c.layup_name} — Order #${c.layer_order}</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[9px] font-black text-[rgb(var(--text-soft))] uppercase tracking-widest">Select Fields to Update</span>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2">
                             <div class="p-4 border-r border-[rgb(var(--line-color))] bg-red-500/[0.02]">
-                                <span class="text-[8px] font-bold text-red-500 uppercase tracking-widest block mb-3">System (Current)</span>
-                                <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
-                                    <div class="flex justify-between"><span>Thickness</span> <span class="font-mono">${c.existing.thickness} mm</span></div>
-                                    <div class="flex justify-between"><span>Width</span> <span class="font-mono">${c.existing.width} mm</span></div>
-                                    <div class="flex justify-between"><span>Angle</span> <span class="font-mono">${c.existing.angle}°</span></div>
+                                <span class="text-[8px] font-bold text-red-500 uppercase tracking-widest block mb-3">System (Current Record)</span>
+                                <div class="space-y-4 text-xs text-[rgb(var(--text-main))]">
+                                    <div class="flex justify-between items-center h-5"><span>Thickness</span> <span class="font-mono">${c.existing.thickness} mm</span></div>
+                                    <div class="flex justify-between items-center h-5"><span>Width</span> <span class="font-mono">${c.existing.width} mm</span></div>
+                                    <div class="flex justify-between items-center h-5"><span>Angle</span> <span class="font-mono">${c.existing.angle}°</span></div>
                                 </div>
                             </div>
                             <div class="p-4 bg-emerald-500/[0.02]">
-                                <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-widest block mb-3">Incoming (File)</span>
-                                <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
-                                    <div class="flex justify-between"><span>Thickness</span> <span class="font-mono ${isDiff(c.incoming.thickness, c.existing.thickness)}">${c.incoming.thickness} mm</span></div>
-                                    <div class="flex justify-between"><span>Width</span> <span class="font-mono ${isDiff(c.incoming.width, c.existing.width)}">${c.incoming.width} mm</span></div>
-                                    <div class="flex justify-between"><span>Angle</span> <span class="font-mono ${isDiff(c.incoming.angle, c.existing.angle)}">${c.incoming.angle}°</span></div>
+                                <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-widest block mb-3">Incoming (New Values)</span>
+                                <div class="space-y-4 text-xs text-[rgb(var(--text-main))]">
+                                    ${['thickness', 'width', 'angle'].map(f => `
+                                        <div class="flex justify-between items-center h-5 ${isDiff(f) ? 'text-amber-500' : ''}">
+                                            <span>${f.charAt(0).toUpperCase() + f.slice(1)}</span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-mono ${isDiff(f) ? 'font-bold underline decoration-amber-500/30' : ''}">${c.incoming[f]} ${f === 'angle' ? '°' : 'mm'}</span>
+                                                ${isDiff(f) ? `
+                                                    <input type="checkbox" data-res-key="${key}" data-res-field="${f}" checked 
+                                                        class="w-3.5 h-3.5 rounded border-emerald-500/30 bg-black/20 text-emerald-500 focus:ring-0 cursor-pointer">
+                                                ` : `<div class="w-3.5"></div>`}
+                                            </div>
+                                        </div>
+                                    `).join('')}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
             html += `</div>`;
         } else {
@@ -459,22 +471,44 @@
     };
 
     const confirmImport = async (strategy) => {
-        const btn = strategy === 'skip' ? document.getElementById('importSkipBtn') : document.getElementById('importOverwriteBtn');
+        const btnIdMap = {
+            'skip': 'importSkipBtn',
+            'overwrite': 'importOverwriteBtn',
+            'granular': 'importMergeBtn',
+            'duplicate': 'importDuplicateBtn'
+        };
+        const btn = document.getElementById(btnIdMap[strategy]);
         if (!btn) return;
+
+        const resolutions = {};
+        if (strategy === 'granular') {
+            document.querySelectorAll('input[data-res-key]:checked').forEach(cb => {
+                const key = cb.getAttribute('data-res-key');
+                const field = cb.getAttribute('data-res-field');
+                if (!resolutions[key]) resolutions[key] = [];
+                resolutions[key].push(field);
+            });
+            if (Object.keys(resolutions).length === 0) return window.showToast('Please select at least one numeric change to apply', false);
+        }
+
         const originalText = btn.innerText;
-        btn.disabled = true; btn.innerText = 'Processing...';
+        btn.disabled = true; btn.innerText = 'Syncing...';
 
         try {
             const r = await fetch(`${config.apiSuppliers}/${importSupplierId}/import/confirm`, {
                 method: 'POST',
-                body: JSON.stringify({ import_token: activeImportToken, strategy: strategy }),
+                body: JSON.stringify({
+                    import_token: activeImportToken,
+                    strategy: strategy === 'granular' ? 'merge' : strategy,
+                    resolutions: resolutions
+                }),
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': config.csrfToken }
             });
             const res = await r.json(); if (!r.ok) throw new Error(res.message);
             window.showToast(res.message, res.success);
             window.closeConflictModal();
             fetchSuppliers(currentPage);
-        } catch (e) { alert(e.message); }
+        } catch (e) { window.showToast(e.message, false); }
         finally { btn.disabled = false; btn.innerText = originalText; }
     };
 
