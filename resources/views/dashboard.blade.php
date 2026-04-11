@@ -31,20 +31,17 @@
             <div
                 class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 relative overflow-hidden group transition-colors">
                 <div class="absolute right-0 top-0 opacity-5 p-4 scale-150 transform transition group-hover:scale-125">
-                    <svg class="w-24 h-24 text-[rgb(var(--brand))]" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
-                    </svg>
                 </div>
                 <h3 class="text-[13px] font-semibold text-[rgb(var(--text-soft))] tracking-wide uppercase">Suppliers
                 </h3>
                 <div class="mt-4 flex items-baseline gap-3">
-                    <p id="stat-suppliers" class="text-4xl font-bold text-[rgb(var(--text-main))]" data-value="{{ $stats['suppliers'] ?? 0 }}">0</p>
+                    <p id="stat-suppliers" class="text-4xl font-bold text-[rgb(var(--text-main))]"
+                        data-value="{{ $stats['suppliers'] ?? 0 }}">0</p>
                     <span
                         class="text-xs font-semibold text-[rgb(var(--brand))] bg-[rgb(var(--brand))/10] px-2 py-0.5 rounded-sm">Registered</span>
                 </div>
             </div>
- 
+
             <div
                 class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 relative overflow-hidden group transition-colors">
                 <div class="absolute right-0 top-0 opacity-5 p-4 scale-150 transform transition group-hover:scale-125">
@@ -54,13 +51,14 @@
                 </div>
                 <h3 class="text-[13px] font-semibold text-[rgb(var(--text-soft))] tracking-wide uppercase">Layups</h3>
                 <div class="mt-4 flex items-baseline gap-3">
-                    <p id="stat-layups" class="text-4xl font-bold text-[rgb(var(--text-main))]" data-value="{{ $stats['layups'] ?? 0 }}">0</p>
+                    <p id="stat-layups" class="text-4xl font-bold text-[rgb(var(--text-main))]"
+                        data-value="{{ $stats['layups'] ?? 0 }}">0</p>
                     <span
                         class="text-xs font-semibold text-[rgb(var(--brand))] bg-[rgb(var(--brand))/10] px-2 py-0.5 rounded-sm">Active
                         setups</span>
                 </div>
             </div>
- 
+
             <div
                 class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 relative overflow-hidden group transition-colors">
                 <div class="absolute right-0 top-0 opacity-5 p-4 scale-150 transform transition group-hover:scale-125">
@@ -72,37 +70,50 @@
                 <h3 class="text-[13px] font-semibold text-[rgb(var(--text-soft))] tracking-wide uppercase">Technical
                     Layers</h3>
                 <div class="mt-4 flex items-baseline gap-3">
-                    <p id="stat-layers" class="text-4xl font-bold text-[rgb(var(--text-main))]" data-value="{{ $stats['layers'] ?? 0 }}">0</p>
+                    <p id="stat-layers" class="text-4xl font-bold text-[rgb(var(--text-main))]"
+                        data-value="{{ $stats['layers'] ?? 0 }}">0</p>
                     <span
                         class="text-xs font-semibold text-[rgb(var(--text-muted))] bg-[rgb(var(--text-main))/5] px-2 py-0.5 rounded-sm">Data
                         points</span>
                 </div>
             </div>
         </div>
- 
+
         <!-- Chart Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <div class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 transition-colors">
+            <div
+                class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 transition-colors">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h3 class="text-xs font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Supplier Partnership</h3>
-                        <p class="text-[10px] text-[rgb(var(--text-muted))] mt-1">Layup distribution across top partners</p>
+                        <h3 class="text-xs font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Supplier
+                            Partnership</h3>
+                        <p class="text-[10px] text-[rgb(var(--text-muted))] mt-1">Layup distribution across top partners
+                        </p>
                     </div>
                     <div class="p-2 bg-[rgb(var(--brand))/10] rounded-lg">
-                        <svg class="w-4 h-4 text-[rgb(var(--brand))]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+                        <svg class="w-4 h-4 text-[rgb(var(--brand))]" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            <path stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
                     </div>
                 </div>
                 <div id="supplierChart" class="min-h-[250px]"></div>
             </div>
- 
-            <div class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 transition-colors">
-                 <div class="flex items-center justify-between mb-6">
+
+            <div
+                class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-6 transition-colors">
+                <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h3 class="text-xs font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Layer Complexity</h3>
+                        <h3 class="text-xs font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Layer
+                            Complexity</h3>
                         <p class="text-[10px] text-[rgb(var(--text-muted))] mt-1">Number of layers in top layup sets</p>
                     </div>
                     <div class="p-2 bg-blue-500/10 rounded-lg">
-                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                     </div>
                 </div>
                 <div id="layerChart" class="min-h-[250px]"></div>
@@ -127,9 +138,13 @@
                 <tbody>
                     @forelse($recentActivity->take(5) as $log)
                         <tr class="hover:bg-white/[0.02] transition-colors group">
-                            <td class="pl-10 text-[11px] font-mono text-[rgb(var(--text-muted))] group-hover:text-[rgb(var(--text-main))] transition-colors">
-                                {{ optional($log->created_at)->format('Y-m-d H:i:s') }}</td>
-                            <td class="text-[rgb(var(--text-soft))] text-[13px] font-semibold group-hover:text-[rgb(var(--text-main))]">{{ $log->entity_type }}</td>
+                            <td
+                                class="pl-10 text-[11px] font-mono text-[rgb(var(--text-muted))] group-hover:text-[rgb(var(--text-main))] transition-colors">
+                                {{ optional($log->created_at)->format('Y-m-d H:i:s') }}
+                            </td>
+                            <td
+                                class="text-[rgb(var(--text-soft))] text-[13px] font-semibold group-hover:text-[rgb(var(--text-main))]">
+                                {{ $log->entity_type }}</td>
                             <td class="text-center">
                                 @if(str_contains(strtolower($log->action), 'created'))
                                     <span
@@ -145,7 +160,9 @@
                                         class="text-[10px] font-black px-3 py-1.5 rounded-full bg-[rgb(var(--text-main))/8%] text-[rgb(var(--text-main))] border border-[rgb(var(--text-main))/20] tracking-wider uppercase">{{ $log->action }}</span>
                                 @endif
                             </td>
-                            <td class="pr-6 text-[rgb(var(--text-soft))] text-[12px] leading-relaxed group-hover:text-[rgb(var(--text-main))] transition-colors">{{ $log->description }}</td>
+                            <td
+                                class="pr-6 text-[rgb(var(--text-soft))] text-[12px] leading-relaxed group-hover:text-[rgb(var(--text-main))] transition-colors">
+                                {{ $log->description }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -174,11 +191,11 @@
                 });
 
                 const chartColors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'];
-                
+
                 // Supplier Chart
                 const supLabels = {!! json_encode($topSuppliers->pluck('name')) !!};
                 const supData = {!! json_encode($topSuppliers->pluck('layups_count')) !!};
-                
+
                 new ApexCharts(document.querySelector("#supplierChart"), {
                     series: supData,
                     chart: { type: 'donut', height: 280, animations: { enabled: true, easing: 'easeinout' }, foreColor: '#aaa' },

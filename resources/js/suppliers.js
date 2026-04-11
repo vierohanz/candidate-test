@@ -68,7 +68,6 @@
     const renderSuppliersDom = (grid, data, meta) => {
         if (!Array.isArray(data) || data.length === 0) {
             grid.innerHTML = `<div class="col-span-full py-20 text-center text-[rgb(var(--text-soft))]">
-                                    <svg class="w-10 h-10 opacity-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                                     <span class="block font-medium text-lg">Data Not Found</span>
                                     <span class="block text-sm mt-1">No suppliers found. Create a new one to get started.</span>
                                 </div>`;
@@ -77,9 +76,6 @@
 
         grid.innerHTML = data.map(d => `
             <div class="group relative bg-[#1E1E1E] border border-white/5 rounded-2xl p-8 transition-all duration-300 hover:border-emerald-500/30 hover:translate-y-[-2px] flex flex-col h-full shadow-lg overflow-hidden">
-                <svg class="absolute -right-2 -bottom-2 w-32 h-32 text-white/[0.02] pointer-events-none transform -rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
                 
                 <div class="flex flex-col items-center text-center relative z-10">
                     <div class="h-20 w-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-800/20 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-3xl font-black mb-6 shadow-inner">

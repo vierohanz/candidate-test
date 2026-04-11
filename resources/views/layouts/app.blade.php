@@ -64,34 +64,40 @@
                     </svg>
                     Suppliers
                 </a>
-                <a href="{{ route('layups.page') }}" class="sidebar-link {{ Route::is('layups.page') ? 'active' : '' }}">
+                <a href="{{ route('layups.page') }}"
+                    class="sidebar-link {{ Route::is('layups.page') ? 'active' : '' }}">
                     <svg class="sidebar-link-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
                     </svg>
                     Layups
                 </a>
-                <a href="{{ route('layers.page') }}" class="sidebar-link {{ Route::is('layers.page') ? 'active' : '' }}">
+                <a href="{{ route('layers.page') }}"
+                    class="sidebar-link {{ Route::is('layers.page') ? 'active' : '' }}">
                     <svg class="sidebar-link-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path
                             d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z" />
                     </svg>
                     Layers
                 </a>
-                <a href="{{ route('imports.index') }}" class="sidebar-link {{ Route::is('imports.index') ? 'active' : '' }}">
+                <a href="{{ route('imports.index') }}"
+                    class="sidebar-link {{ Route::is('imports.index') ? 'active' : '' }}">
                     <svg class="sidebar-link-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 16l4-4h-3V4h-2v8H8l4 4zm-7 2h14v2H5z" />
                     </svg>
                     Import
                 </a>
-                <a href="{{ route('exports.index') }}" class="sidebar-link {{ Route::is('exports.index') ? 'active' : '' }}">
+                <a href="{{ route('exports.index') }}"
+                    class="sidebar-link {{ Route::is('exports.index') ? 'active' : '' }}">
                     <svg class="sidebar-link-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 8 8 12h3v8h2v-8h3l-4-4zM5 4h14v2H5z" />
                     </svg>
                     Export
                 </a>
-                <a href="{{ route('activity.index') }}" class="sidebar-link {{ Route::is('activity.index') ? 'active' : '' }}">
+                <a href="{{ route('activity.index') }}"
+                    class="sidebar-link {{ Route::is('activity.index') ? 'active' : '' }}">
                     <svg class="sidebar-link-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 3h9l5 5v13a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 1.5V9h4.5L13 4.5zM7 12h10v1.5H7V12zm0 4h10v1.5H7V16z" />
+                        <path
+                            d="M5 3h9l5 5v13a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 1.5V9h4.5L13 4.5zM7 12h10v1.5H7V12zm0 4h10v1.5H7V16z" />
                     </svg>
                     Activity Logs
                 </a>
@@ -145,7 +151,8 @@
                                 <h3 class="text-xs font-semibold uppercase tracking-wider">Recent Activity</h3>
                             </div>
                             <div id="notificationDropdownBody" class="max-h-64 overflow-y-auto">
-                                <div class="p-4 text-center text-xs text-[rgb(var(--text-soft))]">Loading notifications...</div>
+                                <div class="p-4 text-center text-xs text-[rgb(var(--text-soft))]">Loading
+                                    notifications...</div>
                             </div>
                         </div>
                     </div>
@@ -236,7 +243,7 @@
             if (!toast || !toastMsg) return;
 
             toastMsg.innerText = message || (isSuccess ? 'Success' : 'Error');
-            
+
             if (isSuccess) {
                 toast.classList.remove('bg-red-500/90', 'border-red-500/20');
                 toast.classList.add('bg-[rgb(var(--brand))]/90', 'border-emerald-500/20');
@@ -266,11 +273,14 @@
         }
         window.showToast = showToast;
     </script>
-    
+
     <div id="global-toast"
         class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[rgb(var(--brand))]/90 backdrop-blur-md border border-white/10 text-white px-6 py-4 rounded-2xl shadow-xl text-sm font-bold opacity-0 -translate-y-4 transition-all duration-300 pointer-events-none items-center gap-3 hidden min-w-[300px] justify-center text-center">
-        <div id="global-toast-icon" class="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        <div id="global-toast-icon"
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
         </div>
         <div>
             <span id="global-toast-msg">Success</span>
