@@ -76,42 +76,52 @@
         }
 
         grid.innerHTML = data.map(d => `
-            <div class="group relative bg-[rgb(28,28,28)] border border-[rgb(var(--line-color))] rounded-3xl p-6 hover:border-[rgb(var(--brand))] hover:shadow-2xl hover:shadow-[rgb(var(--brand))]/10 transition-all duration-500 overflow-hidden">
-                <div class="absolute -bottom-6 -right-6 text-white/[0.03] group-hover:text-white/[0.08] group-hover:-translate-x-4 group-hover:-translate-y-4 transition-all duration-700 pointer-events-none">
-                    <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
-                    </svg>
-                </div>
-                <div class="absolute top-4 right-4 flex opacity-0 group-hover:opacity-100 transition-all duration-300 gap-1.5 translate-y-2 group-hover:translate-y-0 z-10">
-                    <button onclick="suppliers.viewSupplier(${d.id})" title="View Hierarchy" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-blue-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                    <button onclick="suppliers.exportSupplier(${d.id})" title="Export JSON" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-emerald-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
-                    <button onclick="suppliers.triggerImport(${d.id})" title="Import JSON" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-amber-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></button>
-                    <button onclick="suppliers.openEditDrawer(${d.id}, '${(d.name || '').replace(/'/g, "\\'")}')" title="Edit" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-white backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-                    <button onclick="suppliers.deleteSupplier(${d.id})" title="Delete" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-red-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                </div>
-                <div class="flex flex-col items-center text-center relative z-0">
-                    <div class="h-20 w-20 rounded-[2rem] bg-gradient-to-br from-[rgb(var(--brand))] to-emerald-600 text-white flex items-center justify-center text-3xl font-black mb-6 shadow-2xl shadow-emerald-500/20 group-hover:rotate-6 transition-all duration-500">
+            <div class="group relative bg-[#1E1E1E] border border-white/5 rounded-2xl p-8 transition-all duration-300 hover:border-emerald-500/30 hover:translate-y-[-2px] flex flex-col h-full shadow-lg overflow-hidden">
+                <svg class="absolute -right-2 -bottom-2 w-32 h-32 text-white/[0.02] pointer-events-none transform -rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                
+                <div class="flex flex-col items-center text-center relative z-10">
+                    <div class="h-20 w-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-800/20 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-3xl font-black mb-6 shadow-inner">
                         ${d.name ? d.name.charAt(0).toUpperCase() : '?'}
                     </div>
-                    <h3 class="text-lg font-bold text-[rgb(var(--text-main))] w-full truncate px-4 group-hover:text-[rgb(var(--brand))] transition-colors duration-300" title="${d.name}">${d.name}</h3>
-                    <div class="mt-4 flex flex-col items-center gap-1">
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[rgb(var(--text-muted))]">Authorized Partner</span>
-                        <span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-mono text-[rgb(var(--text-soft))] border border-white/5 backdrop-blur-sm">SUPP-${String(d.id).padStart(4, '0')}</span>
+                    <h3 class="text-xl font-bold text-white mb-2 truncate w-full" title="${d.name}">${d.name}</h3>
+                    <p class="text-[10px] font-mono text-[rgb(var(--text-muted))] uppercase tracking-[0.2em] mb-8 px-4 py-1.5 bg-white/5 rounded-full inline-block">SUPP-${String(d.id).padStart(4, '0')}</p>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center justify-between">
+                         <div class="flex items-center gap-2">
+                             <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                             <span class="text-[11px] font-bold text-[rgb(var(--text-soft))] uppercase tracking-tight">Active Layups</span>
+                         </div>
+                         <span class="text-sm font-black text-white">${d.layups_count || 0} UNITS</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000" style="width: ${Math.min(100, (d.layups_count || 0) * 10)}%"></div>
                     </div>
                 </div>
-                <div class="mt-8 pt-5 border-t border-white/5 flex justify-between items-center relative z-0">
-                     <div>
-                        <p class="text-[10px] text-[rgb(var(--text-muted))] font-bold uppercase tracking-widest">Active Layups</p>
-                        <div class="mt-1 flex items-baseline gap-1">
-                            <p class="text-xl font-black text-white">${d.layups_count || 0}</p>
-                            <span class="text-[9px] text-[rgb(var(--brand))] font-bold">UNITS</span>
-                        </div>
-                     </div>
-                     <div class="h-8 w-8 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[rgb(var(--brand))]/20 transition-colors">
-                        <svg class="w-4 h-4 text-[rgb(var(--text-muted))] group-hover:text-[rgb(var(--brand))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                     </div>
+
+                <div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                        <button data-bounce-click onclick="suppliers.viewSupplier(${d.id})" title="View" class="h-8 w-8 rounded-lg text-emerald-400 hover:text-emerald-300 flex items-center justify-center transition-all duration-200">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="3" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="3" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
+                        <button data-bounce-click onclick="suppliers.triggerImport(${d.id})" title="Import" class="h-8 w-8 rounded-lg text-[rgb(var(--text-soft))] hover:text-amber-400 flex items-center justify-center transition-all duration-200">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        </button>
+                        <button data-bounce-click onclick="suppliers.exportSupplier(${d.id})" title="Export" class="h-8 w-8 rounded-lg text-[rgb(var(--text-soft))] hover:text-emerald-400 flex items-center justify-center transition-all duration-200">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button data-bounce-click onclick="suppliers.openEditDrawer(${d.id}, '${(d.name || '').replace(/'/g, "\\'")}')" title="Edit" class="h-8 w-8 rounded-lg text-[rgb(var(--text-muted))] hover:text-sky-400 flex items-center justify-center transition-all duration-200">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        </button>
+                        <button data-bounce-click onclick="suppliers.deleteSupplier(${d.id})" title="Delete" class="h-8 w-8 rounded-lg text-[rgb(var(--text-muted))] hover:text-red-400 flex items-center justify-center transition-all duration-200">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -271,29 +281,33 @@
         if (!content) return;
 
         let layupsHtml = (data.layups || []).map(l => `
-            <div class="flex items-center justify-between p-2.5 bg-black/5 rounded-lg border border-[rgb(var(--line-color))] hover:border-emerald-500/30 transition-colors">
-                <span class="text-xs font-semibold text-[rgb(var(--text-main))]">${l.name}</span>
-                <span class="text-[9px] font-mono text-[rgb(var(--text-soft))]">#${l.id}</span>
+            <div class="flex items-center justify-between px-3 py-2.5 bg-black/5 rounded-lg border border-[rgb(var(--line-color))] hover:border-emerald-500/30 transition-colors">
+                <span class="text-sm font-semibold text-[rgb(var(--text-main))]">${l.name}</span>
+                <span class="text-[11px] font-mono text-[rgb(var(--text-soft))]">#${l.id}</span>
             </div>
         `).join('');
 
-        if ((data.layups || []).length === 0) layupsHtml = '<p class="text-[11px] text-[rgb(var(--text-soft))] italic">No layups configured yet.</p>';
+        if ((data.layups || []).length === 0) layupsHtml = '<p class="text-sm text-[rgb(var(--text-soft))] italic">No layups configured yet.</p>';
+
+        const layupsScrollStyle = (data.layups || []).length > 5
+            ? 'max-height: 286px; overflow-y: auto;'
+            : '';
 
         content.innerHTML = `
-            <div class="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl mb-6">
-                <div class="h-12 w-12 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/20">${data.name ? data.name.charAt(0) : '?'}</div>
+            <div class="flex items-center gap-4 p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-xl mb-6">
+                <div class="h-14 w-14 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-emerald-500/20">${data.name ? data.name.charAt(0) : '?'}</div>
                 <div>
-                    <p class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-0.5">Supplier Identity</p>
-                    <p class="text-xl font-bold text-[rgb(var(--text-main))]">${data.name}</p>
+                    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.22em] mb-1">Supplier Identity</p>
+                    <p class="text-[1.75rem] leading-none font-bold text-[rgb(var(--text-main))]">${data.name}</p>
                 </div>
             </div>
 
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <h4 class="text-[10px] font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Linked CLT Layups</h4>
-                    <span class="text-[10px] bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full font-bold">${(data.layups || []).length} Sets</span>
+                    <h4 class="text-xs font-bold text-[rgb(var(--text-soft))] uppercase tracking-[0.18em]">Linked CLT Layups</h4>
+                    <span class="text-[11px] bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full font-bold">${(data.layups || []).length} Sets</span>
                 </div>
-                <div class="max-h-[200px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                <div class="pr-2 custom-scrollbar space-y-2" style="${layupsScrollStyle}">
                     ${layupsHtml}
                 </div>
             </div>
@@ -526,6 +540,8 @@
         fetch: fetchSuppliers,
         showDrawer,
         closeDrawer,
+        closeDeleteModal: window.closeDeleteModal,
+        closeConflictModal: window.closeConflictModal,
         openCreateDrawer,
         openEditDrawer,
         saveSupplier,
@@ -535,8 +551,8 @@
         triggerImport,
         confirmImport,
         openConflictModal,
-        openDetailModal,
-        closeDetailModal
+        openDetailModal: window.openDetailModal,
+        closeDetailModal: window.closeDetailModal
     };
 
     // Initial check

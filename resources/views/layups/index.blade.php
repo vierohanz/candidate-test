@@ -1,9 +1,9 @@
 <x-app-layout title="Layups">
 
     <div data-api-layups="{{ url('/api/v1/layups') }}" data-api-suppliers="{{ url('/api/v1/suppliers') }}">
-        <h2 class="text-2xl font-semibold text-[rgb(var(--text-main))] mb-2">Layups</h2>
+        <h2 class="text-2xl font-semibold text-[rgb(var(--text-main))] mb-6">Layups</h2>
 
-        <div class="flex items-center gap-3 overflow-x-auto pb-4 mb-4 scrollbar-hide" id="supplierTabs">
+        <div class="flex items-center gap-3 overflow-x-auto pb-5 mb-1 scrollbar-hide" id="supplierTabs">
         </div>
 
         <div class="flex items-center justify-between mb-6">
