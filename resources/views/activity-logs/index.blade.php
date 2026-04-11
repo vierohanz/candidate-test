@@ -8,11 +8,10 @@
                 changes are displayed here in the most recent order for easier reading during reviews and demos.</p>
         </section>
 
-        <section class="clt-card overflow-hidden p-0">
+        <section class="overflow-hidden p-0">
             <div class="overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead
-                        class="bg-[rgba(var(--line-color),0.03)] text-left text-[11px] uppercase tracking-[0.22em] text-[rgb(var(--text-soft))]">
+                <table class="ref-table">
+                    <thead>
                         <tr>
                             <th class="px-5 py-4 font-black">Description</th>
                             <th class="px-5 py-4 font-black">Action</th>
@@ -34,8 +33,7 @@
         <div
             class="clt-pagination-shell flex flex-col gap-4 rounded-[18px] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div class="text-sm text-[rgb(var(--text-soft))]">
-                <span id="activityPaginationInfo" class="font-medium text-[rgb(var(--text-muted))]">Showing 0 activity
-                    logs</span>
+                <span id="activityPaginationInfo" class="text-[11px] text-[rgb(var(--text-soft))]">Showing 0 activity logs</span>
             </div>
             <div class="flex items-center gap-2 self-start sm:self-auto">
                 <button id="activityPrevBtn" class="clt-page-btn px-3" disabled>PREV</button>
@@ -84,14 +82,15 @@
                     if (!response.ok || !result.success) throw new Error(result.message || 'Failed to fetch activity logs');
                     renderActivityRows(Array.isArray(result.data) ? result.data : [], result.metadata || {});
                 } catch (error) {
-                    document.getElementById('activityTableBody').innerHTML = `<tr><td colspan="5" class="px-5 py-16 text-center text-rose-500">${error.message}</td></tr>`;
+                    window.showToast(error.message, false);
+                    document.getElementById('activityTableBody').innerHTML = `<tr><td colspan="5" class="px-5 py-16 text-center text-rose- Rose-500">${error.message}</td></tr>`;
                 }
             }
 
             function updateActivityPagination(meta) {
                 const current = Number(meta.current_page || 1);
                 const totalPages = Number(meta.total_page || 1);
-                const total = Number(meta.total_row || 0);
+                const total = Number(meta.total_row || meta.total || 0);
                 const perPage = Number(meta.per_page || activityPerPage);
                 const from = total ? ((current - 1) * perPage) + 1 : 0;
                 const to = total ? Math.min(current * perPage, total) : 0;

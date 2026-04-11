@@ -39,6 +39,7 @@ class SupplierController extends Controller
             $suppliers->getCollection()->transform(fn($s) => [
                 'id' => $s->id,
                 'name' => $s->name,
+                'layups_count' => $s->layups_count,
             ])->values()
         );
 

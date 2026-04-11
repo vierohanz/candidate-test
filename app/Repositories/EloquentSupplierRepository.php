@@ -10,6 +10,7 @@ class EloquentSupplierRepository implements SupplierRepositoryInterface
     public function paginate(int $perPage = 10, ?string $searchTerm = null)
     {
         return Supplier::select(['id', 'name'])
+            ->withCount('layups')
             ->when($searchTerm, function ($query, $searchTerm) {
                 return $query->where('name', 'ILIKE', "%{$searchTerm}%");
             })

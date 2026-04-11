@@ -1,156 +1,124 @@
-![SPEC Toolbox Structure](./public/spec-toolbox.gif)
+<div align="center">
+  <img src="./public/spec-toolbox.gif" width="700" alt="CLT Manager Banner">
+  
+  # 🌲 CLT Manager (Candidate Test)
+  
+  **Enterprise-Grade Timber Management System**
+  
+  *Submitted by **Rais Hannan** as a Feature Test Assignment.*
 
-# Feature Test Assignment
+[![Status](https://img.shields.io/badge/Status-100%25_Completed-4ade80?style=for-the-badge&logo=codeforces&logoColor=white)]()
+[![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)]()
+[![Tailwind](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)]()
+[![Flowy](https://img.shields.io/badge/Flowy-Design-FF69B4?style=for-the-badge&logo=codepen&logoColor=white)]()
+[![Dokploy](https://img.shields.io/badge/Dokploy-Deployment-6366F1?style=for-the-badge&logo=docker&logoColor=white)]()
 
-## 1. Instructions
-
-- Clone or fork this repository.
-- Create a new branch: `{user}-assignment`.
-- Invite **@ikhsan017** and **@dhiaaziz** as collaborators.
-- Follow the setup instructions provided in the repository before running the project.
-
-## 2. Feature Requirements
-
-### Core Features (Main Criteria)
-
-- [ ] CRUD Suppliers
-- [ ] CRUD CLT Layups (nested under Supplier)
-- [ ] CRUD CLT Layers (nested under Layup)
-
-The structure should properly reflect the hierarchy:
-Supplier → Layups → Layers
-
-### Data Model (ERD)
-
-Below is the Entity Relationship Diagram (ERD) representing the data structure:
-
-![ERD](./public/erd-new.png)
-
-### Import / Export (Main Criteria)
-
-- [ ] **Export by Supplier**
-    - Must include: Supplier + all related Layups + all related Layers
-
-- [ ] **Import by Supplier**
-    - Must create and/or update Layups and Layers under the specified supplier
-
-Format is flexible (JSON / CSV / Excel, etc.). JSON format is completely acceptable.
-
-## 3. Feature: Conflict Resolution (Bonus – Important)
-
-During import, conflicts may occur when incoming data differs from existing records.
-
-### Conflict Detection Rules
-
-#### 1. Layup-Level Conflict
-
-If a layup with the same `name` already exists under the same supplier:
-
-- Treat it as the same layup candidate.
-- Do **not** automatically create a new layup.
-
-#### 2. Layer-Level Conflict
-
-If:
-
-- A layer with the same `layer_order` exists within that layup,
-- **AND** one or more fields differ (`thickness`, `width`, `angle`),
-
-→ This must be treated as a conflict.
+</div>
 
 ---
 
-### Required Conflict Handling
+### 📖 Overview
 
-You must implement a clearly defined conflict resolution strategy.
-
-At minimum, support **one** of the following:
-
-- **Overwrite Existing**  
-  (Incoming data replaces current data)
-
-- **Skip Conflict**  
-  (Keep current data, ignore incoming change)
-
-- **Duplicate Layup**  
-  (Create a new layup with a suffix such as `name (imported)`)
-
-- **Reject Entire Import**  
-  (Abort and return a detailed conflict report)
+**CLT Manager** is a robust, full-stack solution built to manage the complex hierarchy of **Cross-Laminated Timber (CLT)** production. From suppliers to technical layer specifications, every data point is versioned, validatable, and visually resolved.
 
 ---
 
-### Advanced Conflict Resolution (UI-Based – Bonus)
+### ✨ Core Capabilities
 
-For additional bonus points, implement a **manual conflict resolution interface** similar to GitHub merge conflict resolution.
+#### 🏗️ Architecture Excellence
 
-Expected behavior:
+- **Hierarchy-First Design**: Strict `Supplier → Layup → Layer` relational enforcement.
+- **Repository & Service Pattern**: Clean abstraction of data access and business rules.
+- **2-Phase Import Engine**: Secure "Scan & Commit" workflow with manual conflict resolution.
+- **Dark Enterprise UI**: Premium dark-mode aesthetics with glassmorphism and smooth micro-interactions.
 
-- Display **Existing Version (Current Data)** and  
-  **Incoming Version (Imported Data)** side-by-side
-- Highlight field-level differences
-- Allow the user to choose:
-    - ✅ Keep Existing
-    - ✅ Accept Incoming
-- Support resolving conflicts one-by-one
-- Provide navigation (e.g., “1 of 3 discrepancies”)
+#### 🛠️ Technical highlights
 
-This may be implemented as:
+- **Diff Engine**: Real-time visual comparison (Existing vs. Incoming) for JSON imports.
+- **Activity Tracking**: Comprehensive event logging for all CRUD and Batch operations.
+- **Snappy UX**: SPA-style navigation powered by PJAX-like DOM hydration and sessionStorage caching.
+- **API Engine**: Unified trait-based JSON responses with automatic pagination meta-data.
 
-- A modal, or
-- A dedicated conflict resolution page.
+---
 
-## 4. Design Reference
+### 🔌 API Reference
 
-A design reference is available in Figma:
+| Endpoint                                | Method         | Description                                      |
+| :-------------------------------------- | :------------- | :----------------------------------------------- |
+| `/api/v1/suppliers`                     | `GET` / `POST` | List all suppliers or create a new one           |
+| `/api/v1/suppliers/{id}/export`         | `GET`          | Export a supplier with all its children to JSON  |
+| `/api/v1/suppliers/{id}/import/scan`    | `POST`         | Dry-run scan for JSON data (Conflicts Detection) |
+| `/api/v1/suppliers/{id}/import/confirm` | `POST`         | Commit scanned data with a resolution strategy   |
+| `/api/v1/activity-logs`                 | `GET`          | Retrieve Paginated Audit Logs                    |
 
-[Figma Design File](https://www.figma.com/design/odWJ887r00aslmSFPIHMCx/SPEC-Toolbox---Feature-Test?node-id=11001-35&t=XUggOaUUi9p8jGFG-1)
+---
 
-> The design is for reference only. Exact visual matching is not required.
+### 🚀 Getting Started
 
-## 5. Evaluation Criteria
+Follow these steps to initialize the environment locally:
 
-### Main Evaluation
+#### 1. Repository Setup
 
-- Correct implementation of the required features
+```bash
+git clone https://github.com/vierohanz/candidate-test.git
+cd candidate-test
+git checkout raishannan-assignment
+```
 
-### Bonus Evaluation
+#### 2. Dependency Management
 
-**Architecture & Design Patterns**
+```bash
+composer install
+npm install
+```
 
-- Use Repository and/or Service pattern
-- Bind interfaces via a Service Provider
+#### 3. Configuration & Database
 
-**Laravel Best Practices**
+```bash
+cp .env.example .env
+php artisan key:generate
 
-- Form Request validation
-- Policies or Gates for authorization
-- Proper use of Route Model Binding
-- Clean, maintainable code following Laravel conventions
+# Set your DB_CONNECTION in .env then run:
+php artisan migrate --seed
+```
 
-**Automated Testing**
+#### 4. Launching the App
 
-- Unit tests (validation, services, repositories)
-- Feature tests (CRUD and import/export flows)
+```bash
+# Terminal 1
+php artisan serve
 
-**Additional Improvements**
+# Terminal 2
+npm run dev
+```
 
-- Any meaningful enhancements will be considered positively
+---
 
-## 6. Submission
+### 🧪 Quality Assurance
 
-The deadline will be provided via email.  
-Please ensure submission within the specified timeframe.
+We maintain high standards through rigorous automated testing.
 
-## 7. Demo
+```bash
+# Execute full test suite
+php artisan test
+```
 
-Include one of the following with your submission:
+| Suite                 | Focus                               |
+| :-------------------- | :---------------------------------- |
+| **SupplierTest**      | Root level CRUD & Export logic      |
+| **CltLayupTest**      | Nested hierarchy & Validation       |
+| **CltLayerTest**      | Order sequence & Technical specs    |
+| **ImportServiceTest** | Dry-run logic & Conflict strategies |
 
-- A demo video (recommended), or
-- A live project link
+---
 
-Ensure the demo clearly showcases:
+### 🎯 Submission Context
 
-- CRUD functionality
-- Import / Export feature
-- Conflict resolution behavior
+- **Collaborators**: @ikhsan017, @dhiaaziz
+- **Focus**: Scalability, Data Integrity, and Premium User Experience.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ for the Feature Test Assignment.</sub>
+</div>

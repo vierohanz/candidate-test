@@ -17,10 +17,12 @@ class DashboardController extends Controller
             return [
                 'stats' => [
                     'suppliers' => Supplier::count(),
-                    'layups' => CltLayup::count(),
-                    'layers' => CltLayer::count(),
-                    'activities' => ActivityLog::count(),
+                    'layups'    => CltLayup::count(),
+                    'layers'    => CltLayer::count(),
+                    'activities'=> ActivityLog::count(),
                 ],
+                'topSuppliers' => Supplier::withCount('layups')->orderBy('layups_count', 'desc')->limit(5)->get(),
+                'distribution' => CltLayup::withCount('layers')->orderBy('layers_count', 'desc')->limit(5)->get(),
                 'recentActivity' => ActivityLog::latest('created_at')->limit(8)->get(),
             ];
         });

@@ -52,12 +52,33 @@
                             <p class="mt-4 text-sm leading-6 text-[rgb(var(--text-soft))]">Download a clean supplier snapshot with all layups and layers included.</p>
                             <div class="mt-6 flex items-center justify-between border-t border-[rgba(var(--line-color),0.06)] pt-5">
                                 <span class="text-xs font-semibold uppercase tracking-[0.18em] text-[rgb(var(--text-soft))]">JSON export</span>
-                                <a href="/api/v1/suppliers/${item.id}/export" class="clt-btn-brand" target="_blank" rel="noopener">Export</a>
+                                <button onclick="silentExport(${item.id})" class="clt-btn-brand">Export</button>
                             </div>
                         </div>
                     `).join('');
                 }
                 updateExportPagination(meta || {});
+            }
+
+            async function silentExport(id) {
+                window.showToast('Preparing snapshot...', true);
+                try {
+                    const r = await fetch(`/api/v1/suppliers/${id}/export`);
+                    if (!r.ok) throw new Error('Download failed');
+                    const blob = await r.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a'); 
+                    a.href = url;
+                    const disposition = r.headers.get('content-disposition');
+                    let filename = `supplier-${id}-export.json`;
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        const m = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                        if (m && m[1]) filename = m[1].replace(/['"]/g, '');
+                    }
+                    a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+                    window.URL.revokeObjectURL(url);
+                    window.showToast('Snapshot downloaded', true);
+                } catch (e) { window.showToast(e.message, false); }
             }
 
             async function fetchExportSuppliers(page = 1, options = {}) {
@@ -102,6 +123,7 @@
             }
 
             window.fetchExportSuppliers = fetchExportSuppliers;
+            window.silentExport = silentExport;
             document.addEventListener('DOMContentLoaded', () => fetchExportSuppliers(1));
         </script>
     @endpush
