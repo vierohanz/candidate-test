@@ -49,8 +49,7 @@
             <section class="mx-auto flex w-full max-w-7xl flex-1 items-center">
                 <div class="grid w-full gap-10 lg:grid-cols-[1.1fr,0.9fr] lg:items-end">
                     <div class="max-w-4xl">
-                        <p class="text-xs font-semibold uppercase tracking-[0.34em] text-emerald-200/90">CLT Data
-                            Workspace</p>
+                       
 
                         <h1
                             class="mt-7 font-display text-[clamp(3.3rem,8vw,7rem)] font-extrabold leading-[0.92] text-white">

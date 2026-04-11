@@ -378,6 +378,7 @@
             }
 
             toast.classList.remove('hidden');
+            toast.classList.add('flex');
             setTimeout(() => {
                 toast.classList.replace('opacity-0', 'opacity-100');
                 toast.classList.replace('-translate-y-4', 'translate-y-0');
@@ -387,14 +388,17 @@
             _toastTimer = setTimeout(() => {
                 toast.classList.replace('opacity-100', 'opacity-0');
                 toast.classList.replace('translate-y-0', '-translate-y-4');
-                setTimeout(() => toast.classList.add('hidden'), 300);
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('flex');
+                }, 300);
             }, 4000);
         }
         window.showToast = showToast;
     </script>
     
     <div id="global-toast"
-        class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[rgb(var(--brand))]/90 backdrop-blur-md border border-white/10 text-white px-6 py-4 rounded-2xl shadow-xl text-sm font-bold opacity-0 -translate-y-4 transition-all duration-300 pointer-events-none flex items-center gap-3 hidden min-w-[300px] justify-center text-center">
+        class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[rgb(var(--brand))]/90 backdrop-blur-md border border-white/10 text-white px-6 py-4 rounded-2xl shadow-xl text-sm font-bold opacity-0 -translate-y-4 transition-all duration-300 pointer-events-none items-center gap-3 hidden min-w-[300px] justify-center text-center">
         <div id="global-toast-icon" class="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
             <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
         </div>
