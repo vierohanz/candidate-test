@@ -13,6 +13,10 @@
 [![Flowy](https://img.shields.io/badge/Flowy-Design-FF69B4?style=for-the-badge&logo=codepen&logoColor=white)]()
 [![Dokploy](https://img.shields.io/badge/Dokploy-Deployment-6366F1?style=for-the-badge&logo=docker&logoColor=white)]()
 
+<br>
+
+**[🌐 View Live Demo](https://test-cli.raishannan.com/)**
+
 </div>
 
 ---
@@ -114,6 +118,7 @@ php artisan test
 
 ### 🎯 Submission Context
 
+- **Live Demo**: [test-cli.raishannan.com](https://test-cli.raishannan.com/)
 - **Collaborators**: @ikhsan017, @dhiaaziz
 - **Focus**: Scalability, Data Integrity, and Premium User Experience.
 
