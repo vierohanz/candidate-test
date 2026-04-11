@@ -47,13 +47,26 @@
 
 ### 🔌 API Reference
 
-| Endpoint                                | Method         | Description                                      |
-| :-------------------------------------- | :------------- | :----------------------------------------------- |
-| `/api/v1/suppliers`                     | `GET` / `POST` | List all suppliers or create a new one           |
-| `/api/v1/suppliers/{id}/export`         | `GET`          | Export a supplier with all its children to JSON  |
-| `/api/v1/suppliers/{id}/import/scan`    | `POST`         | Dry-run scan for JSON data (Conflicts Detection) |
-| `/api/v1/suppliers/{id}/import/confirm` | `POST`         | Commit scanned data with a resolution strategy   |
-| `/api/v1/activity-logs`                 | `GET`          | Retrieve Paginated Audit Logs                    |
+| Endpoint                                | Method           | Description                                      |
+| :-------------------------------------- | :--------------- | :----------------------------------------------- |
+| **Suppliers**                           |                  |                                                  |
+| `/api/v1/suppliers`                     | `GET` / `POST`   | List all suppliers or create a new one           |
+| `/api/v1/suppliers/{id}/show`           | `GET`            | Get single supplier details                      |
+| `/api/v1/suppliers/{id}/export`         | `GET`            | Export supplier + children to JSON               |
+| `/api/v1/suppliers/{id}/import/scan`    | `POST`           | Dry-run scan for JSON data (Conflicts detection) |
+| `/api/v1/suppliers/{id}/import/confirm` | `POST`           | Commit scanned data with resolution strategy     |
+| **Layups**                              |                  |                                                  |
+| `/api/v1/layups/{supplier_id}`          | `GET`            | List all layups for a specific supplier          |
+| `/api/v1/layups`                        | `POST`           | Create a new layup                               |
+| `/api/v1/layups/{id}/show`              | `GET`            | Get layup details                                |
+| `/api/v1/layups/{id}/update`            | `PATCH`          | Update layup information                         |
+| **Layers**                              |                  |                                                  |
+| `/api/v1/layers/{supplier}/{layup}`     | `GET`            | List all layers for a layup                      |
+| `/api/v1/layers`                        | `POST`           | Create a new layer                               |
+| `/api/v1/layers/{id}/show`              | `GET`            | Get layer specifications                         |
+| `/api/v1/layers/{id}/update`            | `PUT`            | Update layer thickness, width, or angle          |
+| **System**                              |                  |                                                  |
+| `/api/v1/activity-logs`                 | `GET`            | Retrieve Paginated Audit Logs                    |
 
 ---
 
