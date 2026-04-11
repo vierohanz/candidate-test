@@ -14,10 +14,10 @@ class CltLayupRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route('id');
+        $id = $this->route('layup');
         $supplierId = $this->input('supplier_id');
 
-        if ($id && !$supplierId) {
+        if ($id && ! $supplierId) {
             $layup = \App\Models\CltLayup::find($id);
             $supplierId = $layup ? $layup->supplier_id : null;
         }
@@ -25,7 +25,7 @@ class CltLayupRequest extends FormRequest
         return [
             'supplier_id' => [
                 $id ? 'sometimes' : 'required',
-                Rule::exists('suppliers', 'id')->whereNull('deleted_at')
+                Rule::exists('suppliers', 'id')->whereNull('deleted_at'),
             ],
             'name' => [
                 'required',

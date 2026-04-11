@@ -3,100 +3,110 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CltLayerRequest;
-use App\Http\Resources\CltLayerResource;
-use App\Models\CltLayer;
 use App\Services\CltLayerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CltLayerController extends Controller
 {
-    protected $service;
+    protected $layerService;
 
-    public function __construct(CltLayerService $service)
+    public function __construct(CltLayerService $layerService)
     {
-        $this->service = $service;
+        $this->layerService = $layerService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request, $supplier_id = null, $layup_id = null): JsonResponse
+    public function index(Request $request)
     {
-        // Use layup_id if provided, otherwise you might want to list all layers for a supplier?
-        // But the requirement says "layers of specific layup".
-        
-        $searchTerm = trim($request->query('q'));
-        $perPage = (int) $request->query('per_page', 10);
-
-        $query = CltLayer::query();
-
-        if ($layup_id) {
-            $query->where('layup_id', (int) $layup_id);
+        if (!$request->is('api/*')) {
+            return view('layers.index');
         }
 
-        $layers = $query->latest()->paginate($perPage);
-        
+        $sid = $request->route('supplier_id') ?? $request->get('supplier_id');
+        $lid = $request->route('layup_id') ?? $request->get('layup_id');
+
+        if (!$sid || !\App\Models\Supplier::where('id', $sid)->exists()) {
+            return $this->errorResponse('Supplier ID and Layup ID are required.', 422);
+        }
+
+        if (!$lid || !\App\Models\CltLayup::where('id', $lid)->exists()) {
+            return $this->errorResponse('Supplier ID and Layup ID are required.', 422);
+        }
+
+        $layers = $this->layerService->getAll(
+            $request->get('get_q'),
+            $request->get('per_page', 10),
+            $sid,
+            $lid
+        );
+
         $layers->setCollection(
-            CltLayerResource::collection($layers->getCollection())->collection
+            $layers->getCollection()->transform(fn($layer) => [
+                'id'          => $layer->id,
+                'layup_id'    => $layer->layup_id,
+                'layer_order' => $layer->layer_order,
+                'thickness'   => $layer->thickness,
+                'width'       => $layer->width,
+                'angle'       => $layer->angle,
+                'layup'       => $layer->layup ? [
+                    'name'        => $layer->layup->name,
+                    'supplier_id' => $layer->layup->supplier_id,
+                    'supplier'    => $layer->layup->supplier ? [
+                        'id'   => $layer->layup->supplier->id,
+                        'name' => $layer->layup->supplier->name,
+                    ] : null,
+                ] : null,
+            ])->values()
         );
 
         return $this->successResponse($layers, 'Layers retrieved successfully');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function show($id): JsonResponse
+    {
+        $layer = $this->layerService->getById($id);
+        if (!$layer) {
+            return $this->errorResponse('Layer not found', 404);
+        }
+
+        return $this->successResponse([
+            'id'          => $layer->id,
+            'layer_order' => $layer->layer_order,
+            'thickness'   => $layer->thickness,
+            'width'       => $layer->width,
+            'angle'       => $layer->angle,
+            'layup'       => $layer->layup ? [
+                'id'            => $layer->layup->id,
+                'name'          => $layer->layup->name,
+                'supplier_name' => $layer->layup->supplier->name ?? 'N/A',
+            ] : null,
+        ], 'Layer retrieved successfully');
+    }
+
     public function store(CltLayerRequest $request): JsonResponse
     {
-        $this->service->create($request->validated());
+        $this->layerService->create($request->validated());
 
-        return $this->successResponse(
-            null,
-            'Layer created successfully',
-            201
-        );
+        return $this->successResponse(null, 'Layer created successfully', 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CltLayer $layer): JsonResponse
+    public function update(CltLayerRequest $request, $id): JsonResponse
     {
-        return $this->successResponse(
-            new CltLayerResource($layer),
-            'Layer retrieved successfully'
-        );
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(CltLayerRequest $request, CltLayer $layer): JsonResponse
-    {
-        $updated = $this->service->update($layer->id, $request->validated());
-
+        $updated = $this->layerService->update($id, $request->validated());
         if (!$updated) {
-            return $this->errorResponse('Layer update failed', 500);
+            return $this->errorResponse('Layer not found', 404);
         }
 
-        return $this->successResponse(
-            null,
-            'Layer updated successfully'
-        );
+        return $this->successResponse(null, 'Layer updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CltLayer $layer): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        $deleted = $this->service->delete($layer->id);
-
+        $deleted = $this->layerService->delete($id);
         if (!$deleted) {
-            return $this->errorResponse('Layer deletion failed', 500);
+            return $this->errorResponse('Layer not found', 404);
         }
 
-        return $this->successResponse(null, 'Layer deleted successfully');
+        return $this->successResponse(null, 'Layer removed successfully');
     }
 }

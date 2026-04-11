@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('clt_layups', function (Blueprint $table) {
@@ -15,8 +16,7 @@ return new class extends Migration {
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique(['supplier_id', 'name']);
+            $table->unique(['supplier_id', 'name'])->whereNull('deleted_at');
         });
     }
 

@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Contracts\Repositories\SupplierRepositoryInterface;
-use App\Repositories\EloquentSupplierRepository;
-use App\Contracts\Repositories\CltLayupRepositoryInterface;
-use App\Repositories\EloquentCltLayupRepository;
 use App\Contracts\Repositories\CltLayerRepositoryInterface;
+use App\Contracts\Repositories\CltLayupRepositoryInterface;
+use App\Contracts\Repositories\SupplierRepositoryInterface;
 use App\Repositories\EloquentCltLayerRepository;
+use App\Repositories\EloquentCltLayupRepository;
+use App\Repositories\EloquentSupplierRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider

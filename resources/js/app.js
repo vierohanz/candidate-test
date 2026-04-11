@@ -3,22 +3,17 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
-// ─── Global UI store ────────────────────────────────────────────────────────
 Alpine.store('ui', {
-    // Desktop sidebar: collapsed = icon-only rail
-    sidebarCollapsed: false,
+    sidebarCollapsed: true,
 
-    // Mobile sidebar: full overlay
     mobileSidebarOpen: false,
 
-    // Dark mode
     dark: localStorage.getItem('clt_dark') === '1',
 
     init() {
-        // Apply dark class immediately (store init runs before first paint)
         document.documentElement.classList.toggle('dark', this.dark);
-        // Reset old persisted collapsed state so layout starts in full mode.
-        localStorage.setItem('clt_sc', '0');
+        const savedCollapsed = localStorage.getItem('clt_sc');
+        this.sidebarCollapsed = savedCollapsed === null ? true : savedCollapsed === '1';
     },
 
     toggleSidebar() {

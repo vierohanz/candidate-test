@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Supplier;
-use App\Models\CltLayup;
 use App\Models\CltLayer;
+use App\Models\CltLayup;
+use App\Models\Supplier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -33,17 +33,17 @@ class ImportTest extends TestCase
                             'layer_order' => 1,
                             'thickness' => 20,
                             'width' => 100,
-                            'angle' => 0
-                        ]
-                    ]
-                ]
-            ]
+                            'angle' => 0,
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson("/api/v1/suppliers/{$this->supplier->id}/import/scan", $payload);
 
         $response->assertStatus(200)
-                 ->assertJsonPath('data.auto_confirmed', true);
+            ->assertJsonPath('data.auto_confirmed', true);
 
         $this->assertDatabaseHas('clt_layups', ['name' => 'New Layup']);
         $this->assertDatabaseHas('clt_layers', ['layer_order' => 1, 'thickness' => 20]);
@@ -59,7 +59,7 @@ class ImportTest extends TestCase
             'layer_order' => 1,
             'thickness' => 20, // Existing is 20
             'width' => 100,
-            'angle' => 0
+            'angle' => 0,
         ]);
 
         // 2. Import data with DIFFERENT thickness (25)
@@ -72,20 +72,20 @@ class ImportTest extends TestCase
                             'layer_order' => 1,
                             'thickness' => 25, // Change to 25
                             'width' => 100,
-                            'angle' => 0
-                        ]
-                    ]
-                ]
-            ]
+                            'angle' => 0,
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson("/api/v1/suppliers/{$this->supplier->id}/import/scan", $payload);
 
         $response->assertStatus(200)
-                 ->assertJsonPath('message', 'Conflicts detected. Review before confirming.')
-                 ->assertJsonFragment(['layer_order' => 1])
-                 ->assertJsonFragment(['thickness' => 20]) // Existing
-                 ->assertJsonFragment(['thickness' => 25]); // Incoming
+            ->assertJsonPath('message', 'Conflicts detected. Review before confirming.')
+            ->assertJsonFragment(['layer_order' => 1])
+            ->assertJsonFragment(['thickness' => 20]) // Existing
+            ->assertJsonFragment(['thickness' => 25]); // Incoming
     }
 
     /** @test */
@@ -103,15 +103,15 @@ class ImportTest extends TestCase
         // 3. Confirm with OVERWRITE
         $confirmResponse = $this->postJson("/api/v1/suppliers/{$this->supplier->id}/import/confirm", [
             'import_token' => $token,
-            'strategy' => 'overwrite'
+            'strategy' => 'overwrite',
         ]);
 
         $confirmResponse->assertStatus(200);
         $this->assertDatabaseHas('clt_layers', [
             'id' => $layer->id,
-            'thickness' => 30 // Must be updated to 30
+            'thickness' => 30, // Must be updated to 30
         ]);
-        
+
         // 4. Token should be deleted from cache
         $this->assertNull(Cache::get("import_data_{$token}"));
     }
@@ -131,12 +131,12 @@ class ImportTest extends TestCase
         // 3. Confirm with SKIP
         $this->postJson("/api/v1/suppliers/{$this->supplier->id}/import/confirm", [
             'import_token' => $token,
-            'strategy' => 'skip'
+            'strategy' => 'skip',
         ]);
 
         $this->assertDatabaseHas('clt_layers', [
             'id' => $layer->id,
-            'thickness' => 20 // Must stay 20
+            'thickness' => 20, // Must stay 20
         ]);
     }
 }

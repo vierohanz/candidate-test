@@ -14,10 +14,10 @@ class CltLayerRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route('id');
+        $id = $this->route('layer');
         $layupId = $this->input('layup_id');
 
-        if ($id && !$layupId) {
+        if ($id && ! $layupId) {
             $layer = \App\Models\CltLayer::find($id);
             $layupId = $layer ? $layer->layup_id : null;
         }
@@ -25,7 +25,7 @@ class CltLayerRequest extends FormRequest
         return [
             'layup_id' => [
                 $id ? 'sometimes' : 'required',
-                Rule::exists('clt_layups', 'id')->whereNull('deleted_at')
+                Rule::exists('clt_layups', 'id')->whereNull('deleted_at'),
             ],
             'layer_order' => [
                 'required',

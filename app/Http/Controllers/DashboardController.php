@@ -14,9 +14,9 @@ class DashboardController extends Controller
     {
         return view('dashboard', [
             'stats' => [
-                'suppliers'  => Supplier::count(),
-                'layups'     => CltLayup::count(),
-                'layers'     => CltLayer::count(),
+                'suppliers' => Supplier::count(),
+                'layups' => CltLayup::count(),
+                'layers' => CltLayer::count(),
                 'activities' => ActivityLog::count(),
             ],
             'recentActivity' => ActivityLog::latest('created_at')->limit(8)->get(),
