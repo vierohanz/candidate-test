@@ -77,7 +77,8 @@ class ImportController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'import_token' => 'required|string',
-            'strategy' => 'required|string|in:overwrite,skip',
+            'strategy' => 'required|string|in:overwrite,skip,granular,duplicate',
+            'resolutions' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -88,13 +89,14 @@ class ImportController extends Controller
             $summary = $this->importService->execute(
                 $supplier->id,
                 $request->input('import_token'),
-                $request->input('strategy')
+                $request->input('strategy'),
+                $request->input('resolutions', [])
             );
             ApiPageCache::bump(['suppliers', 'layups', 'layers', 'dashboard', 'activity_logs']);
 
             return $this->successResponse(
                 $summary,
-                "Import executed successfully using '{$request->input('strategy')}' strategy"
+                'Import executed successfully'
             );
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 500);

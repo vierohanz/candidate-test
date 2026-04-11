@@ -156,8 +156,12 @@
                         <button id="importSkipBtn" onclick="suppliers.confirmImport('skip')"
                             class="px-6 py-2.5 border border-[rgb(var(--line-color))] rounded-xl text-sm font-semibold text-[rgb(var(--text-main))] hover:border-[rgb(var(--text-soft))] transition-all">Keep
                             Existing (Skip)</button>
+                        <button id="importMergeBtn" onclick="suppliers.confirmImport('granular')"
+                            class="px-6 py-2.5 border border-[rgb(var(--brand))] rounded-xl text-sm font-semibold text-[rgb(var(--brand))] hover:bg-[rgb(var(--brand))]/5 transition-all">Apply Selected</button>
+                        <button id="importDuplicateBtn" onclick="suppliers.confirmImport('duplicate')"
+                            class="px-6 py-2.5 border border-blue-500/30 rounded-xl text-sm font-semibold text-blue-500 hover:bg-blue-500/5 transition-all">Duplicate Layup</button>
                         <button id="importOverwriteBtn" onclick="suppliers.confirmImport('overwrite')"
-                            class="clt-btn-brand px-8 py-2.5 shadow-lg shadow-emerald-500/20">Overwrite & Merge</button>
+                            class="clt-btn-brand px-8 py-2.5 shadow-lg shadow-emerald-500/20">Overwrite All</button>
                     </div>
                 </div>
             </div>
