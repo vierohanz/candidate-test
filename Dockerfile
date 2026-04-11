@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN install-php-extensions pdo_pgsql pgsql redis pcntl bcmath gd zip
+
 COPY . .
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
