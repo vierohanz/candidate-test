@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Supplier;
-use App\Models\CltLayup;
 use App\Models\CltLayer;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+use App\Models\CltLayup;
+use App\Models\Supplier;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ImportService
 {
@@ -20,7 +20,7 @@ class ImportService
     {
         $supplier = Supplier::findOrFail($supplierId);
         $token = Str::uuid()->toString();
-        
+
         $report = [
             'import_token' => $token,
             'layups' => [
@@ -36,7 +36,7 @@ class ImportService
                 'total_layups' => 0,
                 'total_layers' => 0,
                 'has_conflicts' => false,
-            ]
+            ],
         ];
 
         // Store the actual raw data in cache, using the token as key
@@ -46,8 +46,7 @@ class ImportService
 
         foreach ($layups as $layupData) {
             $report['summary']['total_layups']++;
-            $layupName = $layupData['name'] ?? 'Unnamed';
-
+            $layupName = trim($layupData['name'] ?? 'Unnamed');
             $existingLayup = CltLayup::where('supplier_id', $supplier->id)
                 ->whereRaw('LOWER(name) = LOWER(?)', [$layupName])
                 ->whereNull('deleted_at')
@@ -76,13 +75,13 @@ class ImportService
                 }
 
                 $incomingSpecs = [
-                    'thickness' => (float)($layerData['thickness'] ?? 0),
-                    'width'     => (float)($layerData['width'] ?? 0),
-                    'angle'     => (float)($layerData['angle'] ?? 0),
+                    'thickness' => (float) ($layerData['thickness'] ?? 0),
+                    'width' => (float) ($layerData['width'] ?? 0),
+                    'angle' => (float) ($layerData['angle'] ?? 0),
                 ];
 
                 if ($existingLayer) {
-                    $isDifferent = 
+                    $isDifferent =
                         ($existingLayer->thickness != $incomingSpecs['thickness']) ||
                         ($existingLayer->width != $incomingSpecs['width']) ||
                         ($existingLayer->angle != $incomingSpecs['angle']);
@@ -92,11 +91,11 @@ class ImportService
                             'layup_name' => $layupName,
                             'layer_order' => $order,
                             'existing' => [
-                                'thickness' => (float)$existingLayer->thickness,
-                                'width' => (float)$existingLayer->width,
-                                'angle' => (float)$existingLayer->angle,
+                                'thickness' => (float) $existingLayer->thickness,
+                                'width' => (float) $existingLayer->width,
+                                'angle' => (float) $existingLayer->angle,
                             ],
-                            'incoming' => $incomingSpecs
+                            'incoming' => $incomingSpecs,
                         ];
                         $report['summary']['has_conflicts'] = true;
                     } else {
@@ -106,7 +105,7 @@ class ImportService
                     $report['layers']['new'][] = [
                         'layup_name' => $layupName,
                         'layer_order' => $order,
-                        'specs' => $incomingSpecs
+                        'specs' => $incomingSpecs,
                     ];
                 }
             }
@@ -123,8 +122,8 @@ class ImportService
         $supplier = Supplier::findOrFail($supplierId);
         $data = Cache::get("import_data_{$token}");
 
-        if (!$data) {
-            throw new Exception("Import data expired or token invalid.");
+        if (! $data) {
+            throw new Exception('Import data expired or token invalid.');
         }
 
         $summary = [
@@ -140,8 +139,10 @@ class ImportService
             $layups = $data['layups'] ?? [];
 
             foreach ($layups as $layupData) {
-                $layupName = $layupData['name'] ?? null;
-                if (!$layupName) continue;
+                $layupName = trim($layupData['name'] ?? '');
+                if (! $layupName) {
+                    continue;
+                }
 
                 $existingLayup = CltLayup::where('supplier_id', $supplier->id)
                     ->whereRaw('LOWER(name) = LOWER(?)', [$layupName])
@@ -152,7 +153,7 @@ class ImportService
                     if ($strategy === 'skip') {
                         $summary['layups_skipped']++;
                         $currentLayup = $existingLayup;
-                        // For skip strategy, we don't return/continue if we want to process layers 
+                        // For skip strategy, we don't return/continue if we want to process layers
                         // but the user said "layup bisa di-update kalau sudah ada".
                         // If we skip layup, we should still try to insert NEW layers or check existing ones.
                     } else {
@@ -163,7 +164,7 @@ class ImportService
                 } else {
                     $currentLayup = CltLayup::create([
                         'supplier_id' => $supplier->id,
-                        'name' => $layupName
+                        'name' => $layupName,
                     ]);
                     $summary['layups_created']++;
                 }
@@ -172,7 +173,9 @@ class ImportService
                 $layers = $layupData['layers'] ?? [];
                 foreach ($layers as $layerData) {
                     $order = $layerData['layer_order'] ?? null;
-                    if ($order === null) continue;
+                    if ($order === null) {
+                        continue;
+                    }
 
                     $existingLayer = CltLayer::where('layup_id', $currentLayup->id)
                         ->where('layer_order', $order)
@@ -180,13 +183,13 @@ class ImportService
                         ->first();
 
                     $payload = [
-                        'thickness' => (float)$layerData['thickness'],
-                        'width'     => (float)$layerData['width'],
-                        'angle'     => (float)$layerData['angle'],
+                        'thickness' => (float) $layerData['thickness'],
+                        'width' => (float) $layerData['width'],
+                        'angle' => (float) $layerData['angle'],
                     ];
 
                     if ($existingLayer) {
-                        $isDifferent = 
+                        $isDifferent =
                             ($existingLayer->thickness != $payload['thickness']) ||
                             ($existingLayer->width != $payload['width']) ||
                             ($existingLayer->angle != $payload['angle']);
@@ -194,6 +197,7 @@ class ImportService
                         if ($isDifferent) {
                             if ($strategy === 'skip') {
                                 $summary['layers_skipped']++;
+
                                 continue;
                             }
                             $existingLayer->update($payload);

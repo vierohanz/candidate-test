@@ -24,7 +24,7 @@ Supplier → Layups → Layers
 
 Below is the Entity Relationship Diagram (ERD) representing the data structure:
 
-![ERD](./erd-new.png)
+![ERD](./public/erd-new.png)
 
 ### Import / Export (Main Criteria)
 
@@ -141,7 +141,6 @@ A design reference is available in Figma:
 
 The deadline will be provided via email.  
 Please ensure submission within the specified timeframe.
-
 
 ## 7. Demo
 

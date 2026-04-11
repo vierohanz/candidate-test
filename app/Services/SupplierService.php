@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Contracts\Repositories\SupplierRepositoryInterface;
 use App\Models\Supplier;
-use Illuminate\Support\Facades\DB;
 use Exception;
 
 class SupplierService
@@ -21,9 +20,14 @@ class SupplierService
         return $this->supplierRepository->paginate($perPage, $searchTerm);
     }
 
-    public function getSupplierById(int $id)
+    public function getSupplierWithLayups(int $id): ?Supplier
     {
-        return $this->supplierRepository->findById($id);
+        $supplier = $this->supplierRepository->findById($id);
+        if ($supplier) {
+            $supplier->load('layups:id,supplier_id,name');
+        }
+
+        return $supplier;
     }
 
     public function createSupplier(array $data): Supplier
@@ -42,16 +46,37 @@ class SupplierService
     }
 
     /**
-     * Export single supplier with full hierarchy
+     * Export single supplier with full hierarchy as structured array.
      */
-    public function exportSupplier(int $id)
+    public function exportSupplier(int $id): array
     {
         $supplier = Supplier::with(['layups.layers'])->find($id);
-        
-        if (!$supplier) {
-            throw new Exception("Supplier not found");
+
+        if (! $supplier) {
+            throw new Exception('Supplier not found');
         }
 
-        return $supplier->toArray();
+        return [
+            'supplier' => [
+                'id'         => $supplier->id,
+                'name'       => $supplier->name,
+                'created_at' => $supplier->created_at,
+                'updated_at' => $supplier->updated_at,
+            ],
+            'layups' => $supplier->layups->map(fn($layup) => [
+                'name'   => $layup->name,
+                'layers' => $layup->layers->map(fn($layer) => [
+                    'layer_order' => $layer->layer_order,
+                    'thickness'   => (float) $layer->thickness,
+                    'width'       => (float) $layer->width,
+                    'angle'       => (float) $layer->angle,
+                ]),
+            ]),
+        ];
+    }
+
+    public function exportFilename(Supplier $supplier): string
+    {
+        return 'CLT_Export_' . str_replace(' ', '_', $supplier->name) . '.json';
     }
 }

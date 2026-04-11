@@ -20,8 +20,8 @@ class ActivityLog extends Model
     ];
 
     protected $casts = [
-        'before'     => 'array',
-        'after'      => 'array',
+        'before' => 'array',
+        'after' => 'array',
         'created_at' => 'datetime',
     ];
 }

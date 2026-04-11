@@ -18,10 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success'  => false,
-                    'message'  => 'Resource not found or invalid URL',
+                    'success' => false,
+                    'message' => 'Resource not found or invalid URL',
                     'metadata' => (object) [],
-                    'data'     => [],
+                    'data' => [],
                 ], 404);
             }
         });
@@ -29,10 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Validation\ValidationException $e, \Illuminate\Http\Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success'  => false,
-                    'message'  => $e->validator->errors()->first(),
+                    'success' => false,
+                    'message' => $e->validator->errors()->first(),
                     'metadata' => (object) [],
-                    'data'     => [],
+                    'data' => [],
                 ], 422);
             }
         });

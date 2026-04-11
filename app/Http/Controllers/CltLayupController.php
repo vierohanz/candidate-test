@@ -3,96 +3,109 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CltLayupRequest;
-use App\Http\Resources\CltLayupResource;
-use App\Models\CltLayup;
-use App\Contracts\Repositories\CltLayupRepositoryInterface;
+use App\Support\ApiPageCache;
+use App\Services\CltLayupService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CltLayupController extends Controller
 {
-    protected $layupRepository;
+    protected $layupService;
 
-    public function __construct(CltLayupRepositoryInterface $layupRepository)
+    public function __construct(CltLayupService $layupService)
     {
-        $this->layupRepository = $layupRepository;
+        $this->layupService = $layupService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request, $supplier_id): JsonResponse
+    public function index(Request $request)
     {
-        $searchTerm = trim($request->query('q'));
-        $perPage = (int) $request->query('per_page', 10);
+        if (!$request->is('api/*')) {
+            return view('layups.index');
+        }
 
-        $layups = CltLayup::where('supplier_id', (int) $supplier_id)
-            ->when($searchTerm, function ($query, $searchTerm) {
-                return $query->where('name', 'ILIKE', "%{$searchTerm}%");
-            })
-            ->latest()
-            ->paginate($perPage);
-        
-        // Wrap collection in Resource
+        $supplierId = $request->route('supplier_id') ?? $request->get('supplier_id');
+
+        if (!$supplierId || !\App\Models\Supplier::where('id', $supplierId)->exists()) {
+            return $this->errorResponse('Supplier not found', 422);
+        }
+
+        $search = $request->get('q');
+        $perPage = (int) $request->get('per_page', 10);
+        $page = (int) $request->get('page', 1);
+
+        $layups = ApiPageCache::remember('layups', [
+            'supplier_id' => (int) $supplierId,
+            'q' => $search,
+            'per_page' => $perPage,
+            'page' => $page,
+        ], 30, function () use ($search, $perPage, $supplierId) {
+            return $this->layupService->getAll($search, $perPage, $supplierId);
+        });
+
         $layups->setCollection(
-            CltLayupResource::collection($layups->getCollection())->collection
+            $layups->getCollection()->transform(fn($layup) => [
+                'id'          => $layup->id,
+                'name'        => $layup->name,
+                'supplier_id' => $layup->supplier_id,
+                'supplier'    => $layup->supplier ? ['name' => $layup->supplier->name] : null,
+                'layers_count' => $layup->layers_count,
+            ])->values()
         );
 
         return $this->successResponse($layups, 'Layups retrieved successfully');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function show($id): JsonResponse
+    {
+        $layup = $this->layupService->getById($id);
+        if (!$layup) {
+            return $this->errorResponse('Layup not found', 404);
+        }
+
+        return $this->successResponse([
+            'id'          => $layup->id,
+            'name'        => $layup->name,
+            'supplier_id' => $layup->supplier_id,
+            'supplier'    => $layup->supplier ? [
+                'id'   => $layup->supplier->id,
+                'name' => $layup->supplier->name,
+            ] : null,
+            'layers' => $layup->layers->map(fn($l) => [
+                'id'        => $l->id,
+                'order'     => $l->layer_order,
+                'thickness' => $l->thickness,
+                'width'     => $l->width,
+                'angle'     => $l->angle,
+            ]),
+        ], 'Layup retrieved successfully');
+    }
+
     public function store(CltLayupRequest $request): JsonResponse
     {
-        $this->layupRepository->create($request->validated());
+        $this->layupService->create($request->validated());
+        ApiPageCache::bump(['layups', 'layers', 'suppliers', 'dashboard', 'activity_logs']);
 
-        return $this->successResponse(
-            null,
-            'Layup created successfully',
-            201
-        );
+        return $this->successResponse(null, 'Layup created successfully', 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CltLayup $layup): JsonResponse
+    public function update(CltLayupRequest $request, $id): JsonResponse
     {
-        return $this->successResponse(
-            new CltLayupResource($layup),
-            'Layup retrieved successfully'
-        );
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(CltLayupRequest $request, CltLayup $layup): JsonResponse
-    {
-        $updated = $this->layupRepository->update($layup->id, $request->validated());
-
+        $updated = $this->layupService->update($id, $request->validated());
         if (!$updated) {
-            return $this->errorResponse('Layup update failed', 500);
+            return $this->errorResponse('Layup not found', 404);
         }
+        ApiPageCache::bump(['layups', 'layers', 'suppliers', 'dashboard', 'activity_logs']);
 
-        return $this->successResponse(
-            null,
-            'Layup updated successfully'
-        );
+        return $this->successResponse(null, 'Layup updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CltLayup $layup): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        $deleted = $this->layupRepository->delete($layup->id);
-
+        $deleted = $this->layupService->delete($id);
         if (!$deleted) {
-            return $this->errorResponse('Layup deletion failed', 500);
+            return $this->errorResponse('Layup not found', 404);
         }
+        ApiPageCache::bump(['layups', 'layers', 'suppliers', 'dashboard', 'activity_logs']);
 
         return $this->successResponse(null, 'Layup deleted successfully');
     }

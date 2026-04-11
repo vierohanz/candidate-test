@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SupplierRequest;
-use App\Http\Resources\SupplierResource;
-use App\Http\Resources\SupplierWithFullHierarchyResource;
-use App\Models\Supplier;
 use App\Services\SupplierService;
+use App\Support\ApiPageCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class SupplierController extends Controller
 {
@@ -20,98 +17,90 @@ class SupplierController extends Controller
         $this->supplierService = $supplierService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $searchTerm = trim($request->query('q'));
-        $perPage = (int) $request->query('per_page', 10);
-        $suppliers = $this->supplierService->getAllSuppliers($searchTerm, $perPage);
-        
-        // Wrap the items in Resource while keeping paginator for metadata extraction
+        if (!$request->is('api/*')) {
+            return view('suppliers.index');
+        }
+
+        $search = $request->get('q');
+        $perPage = (int) $request->get('per_page', 10);
+        $page = (int) $request->get('page', 1);
+
+        $suppliers = ApiPageCache::remember('suppliers', [
+            'q' => $search,
+            'per_page' => $perPage,
+            'page' => $page,
+        ], 30, function () use ($search, $perPage) {
+            return $this->supplierService->getAllSuppliers($search, $perPage);
+        });
+
         $suppliers->setCollection(
-            SupplierResource::collection($suppliers->getCollection())->collection
+            $suppliers->getCollection()->transform(fn($s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+            ])->values()
         );
 
-        return $this->successResponse(
-            $suppliers,
-            'Suppliers retrieved successfully'
-        );
+        return $this->successResponse($suppliers, 'Suppliers retrieved successfully');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(SupplierRequest $request): JsonResponse
     {
         $this->supplierService->createSupplier($request->validated());
+        ApiPageCache::bump(['suppliers', 'dashboard', 'activity_logs', 'layups', 'layers']);
 
-        return $this->successResponse(
-            null,
-            'Supplier created successfully',
-            201
-        );
+        return $this->successResponse(null, 'Supplier created successfully', 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Supplier $supplier): JsonResponse
+    public function show($id): JsonResponse
     {
-        return $this->successResponse(
-            new SupplierResource($supplier),
-            'Supplier retrieved successfully'
-        );
+        $supplier = $this->supplierService->getSupplierWithLayups($id);
+        if (!$supplier) {
+            return $this->errorResponse('Supplier not found', 404);
+        }
+
+        return $this->successResponse([
+            'id'     => $supplier->id,
+            'name'   => $supplier->name,
+            'layups' => $supplier->layups->map(fn($l) => ['id' => $l->id, 'name' => $l->name]),
+        ], 'Supplier retrieved successfully');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(SupplierRequest $request, Supplier $supplier): JsonResponse
+    public function update(SupplierRequest $request, $id): JsonResponse
     {
-        $updated = $this->supplierService->updateSupplier($supplier->id, $request->validated());
-
+        $updated = $this->supplierService->updateSupplier($id, $request->validated());
         if (!$updated) {
-            return $this->errorResponse('Supplier update failed', 500);
+            return $this->errorResponse('Supplier not found', 404);
         }
+        ApiPageCache::bump(['suppliers', 'dashboard', 'activity_logs', 'layups', 'layers']);
 
-        return $this->successResponse(
-            null,
-            'Supplier updated successfully'
-        );
+        return $this->successResponse(null, 'Supplier updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Supplier $supplier): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        $deleted = $this->supplierService->deleteSupplier($supplier->id);
-
+        $deleted = $this->supplierService->deleteSupplier($id);
         if (!$deleted) {
-            return $this->errorResponse('Supplier deletion failed', 500);
+            return $this->errorResponse('Supplier not found', 404);
         }
+        ApiPageCache::bump(['suppliers', 'dashboard', 'activity_logs', 'layups', 'layers']);
 
         return $this->successResponse(null, 'Supplier deleted successfully');
     }
 
-    /**
-     * Export hierarchical data for a specific supplier as a downloadable JSON file.
-     */
-    public function export(Supplier $supplier): \Symfony\Component\HttpFoundation\Response
+    public function export($id)
     {
-        // Refresh with relations
-        $supplier->load('layups.layers');
+        $supplier = $this->supplierService->getSupplierWithLayups($id);
+        if (!$supplier) {
+            return $this->errorResponse('Supplier not found', 404);
+        }
 
-        $resource = new SupplierWithFullHierarchyResource($supplier);
-        $json = json_encode($resource->resolve(), JSON_PRETTY_PRINT);
-        
-        $filename = "export_supplier_" . Str::slug($supplier->name) . "_" . date('Ymd_His') . ".json";
+        $data     = $this->supplierService->exportSupplier($id);
+        $fileName = $this->supplierService->exportFilename($supplier);
 
-        return response($json, 200, [
-            'Content-Type'        => 'application/json',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]);
+        return response()->streamDownload(function () use ($data) {
+            echo json_encode($data, JSON_PRETTY_PRINT);
+        }, $fileName, ['Content-Type' => 'application/json']);
     }
 }

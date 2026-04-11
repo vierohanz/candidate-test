@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CltLayer extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $table = 'clt_layers';
 
@@ -24,9 +24,9 @@ class CltLayer extends Model
 
     protected $casts = [
         'layer_order' => 'integer',
-        'thickness'   => 'decimal:2',
-        'width'       => 'decimal:2',
-        'angle'       => 'decimal:2',
+        'thickness' => 'decimal:2',
+        'width' => 'decimal:2',
+        'angle' => 'decimal:2',
     ];
 
     /**

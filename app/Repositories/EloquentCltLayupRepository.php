@@ -7,9 +7,12 @@ use App\Models\CltLayup;
 
 class EloquentCltLayupRepository implements CltLayupRepositoryInterface
 {
-    public function paginate(int $perPage = 10, ?string $searchTerm = null)
+    public function paginate(int $perPage = 10, ?string $searchTerm = null, ?int $supplierId = null)
     {
         return CltLayup::with('supplier')
+            ->when($supplierId, function ($q, $sid) {
+                return $q->where('supplier_id', $sid);
+            })
             ->when($searchTerm, function ($query, $searchTerm) {
                 return $query->where('name', 'ILIKE', "%{$searchTerm}%");
             })
@@ -30,21 +33,21 @@ class EloquentCltLayupRepository implements CltLayupRepositoryInterface
     public function update(int $id, array $data): bool
     {
         $layup = CltLayup::find($id);
-        if (!$layup) return false;
+        if (! $layup) {
+            return false;
+        }
+
         return $layup->update($data);
     }
 
     public function delete(int $id): bool
     {
         $layup = CltLayup::find($id);
-        if (!$layup) return false;
+        if (! $layup) {
+            return false;
+        }
+
         return $layup->delete();
     }
 
-    public function findByNameUnderSupplier(string $name, int $supplierId): ?CltLayup
-    {
-        return CltLayup::where('supplier_id', $supplierId)
-            ->where('name', $name)
-            ->first();
-    }
 }

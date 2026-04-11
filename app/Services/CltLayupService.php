@@ -14,9 +14,9 @@ class CltLayupService
         $this->repository = $repository;
     }
 
-    public function getAll(?string $searchTerm = null, int $perPage = 10)
+    public function getAll(?string $searchTerm = null, int $perPage = 10, ?int $supplierId = null)
     {
-        return $this->repository->paginate($perPage, $searchTerm);
+        return $this->repository->paginate($perPage, $searchTerm, $supplierId);
     }
 
     public function getById(int $id)

@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use App\Services\ImportService;
-use Illuminate\Http\Request;
+use App\Support\ApiPageCache;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ImportController extends Controller
@@ -28,15 +29,15 @@ class ImportController extends Controller
         if ($request->hasFile('file')) {
             $jsonContent = file_get_contents($request->file('file')->getRealPath());
             $data = json_decode($jsonContent, true);
-        } 
+        }
         // Choice 2: From Raw JSON Body
-        else if ($request->isJson() || $request->all()) {
+        elseif ($request->isJson() || $request->all()) {
             $data = $request->all();
             // Remove 'file' key if it accidentally got in from form-data
-            unset($data['file']); 
+            unset($data['file']);
         }
 
-        if (!$data || !is_array($data)) {
+        if (! $data || ! is_array($data)) {
             return $this->errorResponse('No valid JSON data provided. Please upload a file or send a JSON body.', 422);
         }
 
@@ -46,23 +47,23 @@ class ImportController extends Controller
 
         try {
             $report = $this->importService->scan($supplier->id, $data);
-            
+
             // AUTO-CONFIRM IF NO CONFLCTS
-            if (!$report['summary']['has_conflicts']) {
+            if (! $report['summary']['has_conflicts']) {
                 $summary = $this->importService->execute($supplier->id, $report['import_token'], 'skip'); // Strategy doesn't matter much if no conflicts
-                
+
                 return $this->successResponse(
                     [
                         'auto_confirmed' => true,
-                        'execution_summary' => $summary
+                        'execution_summary' => $summary,
                     ],
-                    "Clean data detected. Import executed automatically."
+                    'Clean data detected. Import executed automatically.'
                 );
             }
 
             return $this->successResponse(
                 $report,
-                "Conflicts detected. Review before confirming."
+                'Conflicts detected. Review before confirming.'
             );
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 500);
@@ -85,11 +86,12 @@ class ImportController extends Controller
 
         try {
             $summary = $this->importService->execute(
-                $supplier->id, 
-                $request->input('import_token'), 
+                $supplier->id,
+                $request->input('import_token'),
                 $request->input('strategy')
             );
-            
+            ApiPageCache::bump(['suppliers', 'layups', 'layers', 'dashboard', 'activity_logs']);
+
             return $this->successResponse(
                 $summary,
                 "Import executed successfully using '{$request->input('strategy')}' strategy"

@@ -39,22 +39,22 @@ trait LogsActivity
 
         try {
             ActivityLog::create([
-                'action'      => $action,
+                'action' => $action,
                 'entity_type' => $entityType,
-                'entity_id'   => $model->getKey(),
-                'before'      => $before,
-                'after'       => $after,
-                'ip_address'  => Request::ip(),
+                'entity_id' => $model->getKey(),
+                'before' => $before,
+                'after' => $after,
+                'ip_address' => Request::ip(),
                 'description' => $description,
             ]);
         } catch (\Throwable $e) {
-            Log::error('ActivityLog write failed: ' . $e->getMessage());
+            Log::error('ActivityLog write failed: '.$e->getMessage());
         }
 
         Log::info("[{$entityType}] {$action} — id:{$model->getKey()}", [
             'description' => $description,
             'before' => $before,
-            'after'  => $after,
+            'after' => $after,
         ]);
     }
 
@@ -62,7 +62,7 @@ trait LogsActivity
     {
         $type = ucfirst(str_replace('_', ' ', static::resolveEntityType()));
         $name = $model->name ?? ($model->layer_order ? "Layer {$model->layer_order}" : 'Item');
-        
+
         // Context enrichment (Supplier name for Layups, etc.)
         $context = '';
         if ($model instanceof \App\Models\CltLayup) {
@@ -98,9 +98,9 @@ trait LogsActivity
     private static function resolveEntityType(): string
     {
         $map = [
-            \App\Models\Supplier::class => 'supplier',
-            \App\Models\CltLayup::class => 'clt_layup',
-            \App\Models\CltLayer::class => 'clt_layer',
+            \App\Models\Supplier::class => 'Supplier',
+            \App\Models\CltLayup::class => 'Layup',
+            \App\Models\CltLayer::class => 'Layer',
         ];
 
         return $map[static::class] ?? class_basename(static::class);
