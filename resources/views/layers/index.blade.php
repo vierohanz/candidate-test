@@ -21,27 +21,21 @@
                 <p class="text-[11px] font-black uppercase tracking-[0.22em] text-[rgb(var(--text-soft))]">Supplier</p>
                 <div class="relative mt-4">
                     <select id="supplierFilter" onchange="handleSupplierChange()"
-                        class="clt-pagination-select w-full rounded-[16px] px-4 py-3.5 pr-10 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[rgba(var(--brand),0.22)]"></select>
-                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[rgb(var(--text-soft))]">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
-                    </span>
+                        class="clt-pagination-select w-full"></select>
                 </div>
             </div>
             <div class="clt-card p-5">
                 <p class="text-[11px] font-black uppercase tracking-[0.22em] text-[rgb(var(--text-soft))]">Layup</p>
                 <div class="relative mt-4">
                     <select id="layupFilter" onchange="handleLayupChange()"
-                        class="clt-pagination-select w-full rounded-[16px] px-4 py-3.5 pr-10 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[rgba(var(--brand),0.22)]"></select>
-                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[rgb(var(--text-soft))]">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
-                    </span>
+                        class="clt-pagination-select w-full"></select>
                 </div>
             </div>
         </section>
 
-        <section class="clt-card overflow-hidden p-0">
+        <section class="overflow-hidden p-0">
             <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse ref-table transition-colors">
+            <table class="ref-table">
                 <thead>
                     <tr>
                         <th class="w-16 pl-4">No</th>
@@ -114,10 +108,7 @@
         </div>
     </div>
 
-    <div id="toast"
-        class="fixed bottom-8 right-8 z-[60] bg-[rgb(var(--brand))] text-white px-5 py-3 rounded-md shadow-xl text-sm font-semibold opacity-0 translate-y-4 transition-all">
-        <span id="toastMsg">Success</span>
-    </div>
+
 
     <!-- Detail Viewer Modal -->
     <div id="detailModal" class="fixed inset-0 z-[100] overflow-hidden hidden">
@@ -263,11 +254,12 @@
                                         <td class="text-center text-[rgb(var(--text-main))]">${d.width}</td>
                                         <td class="text-center text-[rgb(var(--text-main))] font-mono">${d.angle}&deg;</td>
                                         <td class="text-center pr-4">
-                                            <div class="flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onclick="viewLayer(${d.id})" title="View Detail" class="p-1 text-[rgb(var(--text-soft))] hover:text-blue-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                                                <button onclick="openEditDrawer(${JSON.stringify(d).replace(/"/g, "&quot;")})" title="Edit" class="p-1 text-[rgb(var(--text-soft))] hover:text-[rgb(var(--brand))] transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-                                                <button onclick="deleteLayer(${d.id})" title="Delete" class="p-1 text-[rgb(var(--text-soft))] hover:text-red-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                                            </div>
+                                            <div class="flex justify-center items-center gap-2 opacity-100 transition-opacity">
+                                          <div class="flex items-center gap-1">
+                                <button onclick="viewLayer(${d.id})" title="View" class="action-btn hover:text-blue-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                                <button onclick="openEditDrawer(${JSON.stringify(d).replace(/"/g, "&quot;")})" title="Edit" class="action-btn hover:text-emerald-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                <button onclick="deleteLayer(${d.id})" title="Delete" class="action-btn hover:text-red-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                            </div>                  </div>
                                         </td>
                                     </tr>
                                 `).join('');
@@ -280,7 +272,9 @@
                 const current = Number(meta.current_page || 1);
                 const from = total ? ((current - 1) * perPage) + 1 : 0;
                 const to = total ? Math.min(current * perPage, total) : 0;
-                document.getElementById('paginationInfo').innerText = `Showing ${from}-${to} of ${total} layers`;
+                const info = document.getElementById('paginationInfo');
+                if (info) info.innerText = `Showing ${from}-${to} of ${total} layers`;
+
                 prev.disabled = meta.current_page <= 1; prev.onclick = () => fetchLayers(meta.current_page - 1);
                 next.disabled = meta.current_page >= meta.total_page; next.onclick = () => fetchLayers(meta.current_page + 1);
             }
@@ -405,11 +399,11 @@
 
                 showDrawer();
             }
-            async function saveLayer(e) { e.preventDefault(); const lid = document.getElementById('formLayupId').value, id = document.getElementById('layerId').value, btn = document.getElementById('submitBtn'); const data = { layup_id: lid, layer_order: document.getElementById('formOrder').value, thickness: document.getElementById('formThickness').value, width: document.getElementById('formWidth').value, angle: document.getElementById('formAngle').value }; btn.disabled = true; btn.innerText = 'Saving...'; const url = isEdit ? `{{url('/api/v1/layers')}}/${id}/update` : `{{url('/api/v1/layers')}}`; const method = isEdit ? 'PUT' : 'POST'; try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{csrf_token()}}' }, body: JSON.stringify(data) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); showToast(isEdit ? 'Updated' : 'Created'); closeDrawer(); clearLayersCache(); fetchLayers(currentPage); } catch (err) { showToast(err.message); } finally { btn.disabled = false; btn.innerText = 'Save'; } }
+            async function saveLayer(e) { e.preventDefault(); const lid = document.getElementById('formLayupId').value, id = document.getElementById('layerId').value, btn = document.getElementById('submitBtn'); const data = { layup_id: lid, layer_order: document.getElementById('formOrder').value, thickness: document.getElementById('formThickness').value, width: document.getElementById('formWidth').value, angle: document.getElementById('formAngle').value }; btn.disabled = true; btn.innerText = 'Saving...'; const url = isEdit ? `{{url('/api/v1/layers')}}/${id}/update` : `{{url('/api/v1/layers')}}`; const method = isEdit ? 'PUT' : 'POST'; try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{csrf_token()}}' }, body: JSON.stringify(data) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); window.showToast(res.message, res.success); closeDrawer(); clearLayersCache(); fetchLayers(currentPage); } catch (err) { window.showToast(err.message, false); } finally { btn.disabled = false; btn.innerText = 'Save'; } }
             async function viewLayer(id) {
                 const r = await fetch(`{{url('/api/v1/layers')}}/${id}/show`);
                 const res = await r.json();
-                if (!res.success) { showToast(res.message); return; }
+                if (!res.success) { window.showToast(res.message, false); return; }
 
                 const data = res.data;
                 const content = document.getElementById('detailContent');
@@ -466,17 +460,17 @@
                         const r = await fetch(`{{url('/api/v1/layers')}}/${deleteId}/delete`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{csrf_token()}}' } });
                         const res = await r.json();
                         if (!r.ok) throw new Error(res.message);
-                        showToast('Layer removed');
+                        window.showToast(res.message, res.success);
                         closeDeleteModal();
                         clearLayersCache(); fetchLayers(currentPage);
-                    } catch (e) { showToast(e.message); } finally { btn.disabled = false; btn.innerText = 'Delete'; }
+                    } catch (e) { window.showToast(e.message, false); } finally { btn.disabled = false; btn.innerText = 'Delete'; }
                 };
             }
             function closeDeleteModal() {
                 document.getElementById('deleteBackdrop').classList.replace('opacity-100', 'opacity-0'); document.getElementById('deletePanel').classList.add('scale-95', 'opacity-0');
                 setTimeout(() => { document.getElementById('deleteModal').classList.add('hidden'); }, 300);
             }
-            function showToast(m) { const t = document.getElementById('toast'); document.getElementById('toastMsg').innerText = m; t.classList.replace('opacity-0', 'opacity-100'); t.classList.replace('translate-y-4', 'translate-y-0'); setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); t.classList.replace('translate-y-0', 'translate-y-4'); }, 3000); }
+
             window.openCreateDrawer = openCreateDrawer;
             window.openEditDrawer = openEditDrawer;
             window.viewLayer = viewLayer;

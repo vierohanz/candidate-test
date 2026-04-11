@@ -27,7 +27,7 @@
         </div>
 
         <div class="w-full">
-            <table class="w-full text-left border-collapse ref-table transition-colors">
+            <table class="ref-table">
                 <thead>
                     <tr>
                         <th class="w-16 pl-4">No</th>
@@ -88,10 +88,7 @@
         </div>
     </div>
 
-    <div id="toast"
-        class="fixed bottom-8 right-8 z-[60] bg-[rgb(var(--brand))] text-white px-5 py-3 rounded-md shadow-xl text-sm font-semibold opacity-0 translate-y-4 transition-all">
-        <span id="toastMsg">Success</span>
-    </div>
+
 
     <div id="detailModal" class="fixed inset-0 z-[100] overflow-hidden hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity" id="detailBackdrop"
@@ -219,10 +216,12 @@
                                 <td class="text-[rgb(var(--text-main))] font-medium">${d.name}</td>
                                 <td class="text-[rgb(var(--text-soft))]">${d.supplier?.name || 'Unassigned'}</td>
                                 <td class="text-center pr-4">
-                                    <div class="flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onclick="viewLayup(${d.id})" title="View Detail" class="p-1 text-[rgb(var(--text-soft))] hover:text-blue-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                                        <button onclick="openEditDrawer(${d.id}, '${d.name.replace(/'/g, "\\'")}', ${d.supplier?.id})" title="Edit" class="p-1 text-[rgb(var(--text-soft))] hover:text-[rgb(var(--brand))] transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-                                        <button onclick="deleteLayup(${d.id})" title="Delete" class="p-1 text-[rgb(var(--text-soft))] hover:text-red-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                    <div class="flex justify-center items-center gap-2 opacity-100 transition-opacity">
+                                        <div class="flex items-center gap-1">
+                                            <button onclick="viewLayup(${d.id})" title="View" class="action-btn hover:text-blue-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                                            <button onclick="openEditDrawer(${d.id}, '${(d.name || '').replace(/'/g, "\\'")}', ${d.supplier_id || "''"})" title="Edit" class="action-btn hover:text-emerald-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                            <button onclick="deleteLayup(${d.id})" title="Delete" class="action-btn hover:text-red-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -243,30 +242,45 @@
 
             function updatePagination(meta) {
                 const prev = document.getElementById('prevPageBtn'), next = document.getElementById('nextPageBtn');
+                const total = Number(meta.total_row || 0);
+                const perPage = Number(meta.per_page || 10);
+                const current = Number(meta.current_page || 1);
+                const from = total ? ((current - 1) * perPage) + 1 : 0;
+                const to = total ? Math.min(current * perPage, total) : 0;
+                const info = document.getElementById('paginationInfo');
+                if (info) info.innerText = `Showing ${from}-${to} of ${total} layups`;
+
                 prev.disabled = meta.current_page <= 1; prev.onclick = () => fetchLayups(meta.current_page - 1);
                 next.disabled = meta.current_page >= meta.total_page; next.onclick = () => fetchLayups(meta.current_page + 1);
             }
 
             async function init() {
                 const requestId = ++layupsSuppliersRequestId;
-                const r = await fetch('{{ url('/api/v1/suppliers') }}?per_page=10');
+                const r = await fetch('{{ url('/api/v1/suppliers') }}?per_page=100');
                 const res = await r.json();
                 if (requestId !== layupsSuppliersRequestId) return;
 
                 const tabsContainer = document.getElementById('supplierTabs');
                 const formSelect = document.getElementById('formSupplierId');
+                
+                if (tabsContainer) tabsContainer.innerHTML = '';
+                if (formSelect) formSelect.innerHTML = '';
 
                 (res.data || []).forEach((s, ix) => {
                     const btn = document.createElement('button');
                     btn.className = 'top-pill' + (ix === 0 ? ' active' : '');
                     btn.innerText = s.name;
                     btn.onclick = function () { setSupplierFilter(s.id, this); };
-                    tabsContainer.appendChild(btn);
+                    if (tabsContainer) tabsContainer.appendChild(btn);
 
                     if (ix === 0) selectedSupplierId = s.id;
 
-
-                    formSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+                    if (formSelect) {
+                        const opt = document.createElement('option');
+                        opt.value = s.id;
+                        opt.text = s.name;
+                        formSelect.appendChild(opt);
+                    }
                 });
 
                 fetchLayups(1);
@@ -289,16 +303,27 @@
                 }
                 showDrawer();
             }
-            function openEditDrawer(id, name, sid) { isEdit = true; document.getElementById('drawerTitle').innerText = 'Edit Layup'; document.getElementById('layupId').value = id; document.getElementById('layupName').value = name; document.getElementById('formSupplierId').value = sid; showDrawer(); }
+            function openEditDrawer(id, name, sid) { 
+                isEdit = true; 
+                document.getElementById('drawerTitle').innerText = 'Edit Layup'; 
+                document.getElementById('layupId').value = id; 
+                document.getElementById('layupName').value = name; 
+                
+                const targetSid = String(sid || selectedSupplierId);
+                const selectEl = document.getElementById('formSupplierId');
+                selectEl.value = targetSid;
+                
+                showDrawer(); 
+            }
             async function saveLayup(e) {
                 e.preventDefault(); const id = document.getElementById('layupId').value, sid = document.getElementById('formSupplierId').value, name = document.getElementById('layupName').value, btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerText = 'Saving...';
                 const url = isEdit ? `{{ url('/api/v1/layups') }}/${id}/update` : `{{ url('/api/v1/layups') }}`; const method = isEdit ? 'PATCH' : 'POST';
-                try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ name: name, supplier_id: sid }) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); showToast(isEdit ? 'Updated' : 'Created'); closeDrawer(); clearLayupsCache(); fetchLayups(currentPage); } catch (err) { showToast(err.message); } finally { btn.disabled = false; btn.innerText = 'Save'; }
+                try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ name: name, supplier_id: sid }) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); window.showToast(res.message, res.success); closeDrawer(); clearLayupsCache(); fetchLayups(currentPage); } catch (err) { window.showToast(err.message, false); } finally { btn.disabled = false; btn.innerText = 'Save'; }
             }
             async function viewLayup(id) {
                 const r = await fetch(`{{url('/api/v1/layups')}}/${id}/show`);
                 const res = await r.json();
-                if (!res.success) { showToast(res.message); return; }
+                if (!res.success) { window.showToast(res.message, false); return; }
 
                 const data = res.data;
                 const content = document.getElementById('detailContent');
@@ -367,17 +392,17 @@
                         const r = await fetch(`{{url('/api/v1/layups')}}/${deleteId}/delete`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{csrf_token()}}' } });
                         const res = await r.json();
                         if (!r.ok) throw new Error(res.message);
-                        showToast('Layup Removed');
+                        window.showToast(res.message, res.success);
                         closeDeleteModal();
                         clearLayupsCache(); fetchLayups(currentPage);
-                    } catch (e) { showToast(e.message); } finally { btn.disabled = false; btn.innerText = 'Delete'; }
+                    } catch (e) { window.showToast(e.message, false); } finally { btn.disabled = false; btn.innerText = 'Delete'; }
                 };
             }
             function closeDeleteModal() {
                 document.getElementById('deleteBackdrop').classList.replace('opacity-100', 'opacity-0'); document.getElementById('deletePanel').classList.add('scale-95', 'opacity-0');
                 setTimeout(() => { document.getElementById('deleteModal').classList.add('hidden'); }, 300);
             }
-            function showToast(m) { const t = document.getElementById('toast'); document.getElementById('toastMsg').innerText = m; t.classList.replace('opacity-0', 'opacity-100'); t.classList.replace('translate-y-4', 'translate-y-0'); setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); t.classList.replace('translate-y-0', 'translate-y-4'); }, 3000); }
+
             let searchTimeout;
             document.getElementById('searchInput').addEventListener('input', e => {
                 searchQuery = e.target.value;
@@ -385,6 +410,18 @@
                 searchTimeout = setTimeout(() => fetchLayups(1), 1000);
             })
             document.addEventListener('DOMContentLoaded', init);
+
+            window.openCreateDrawer = openCreateDrawer;
+            window.closeDrawer = closeDrawer;
+            window.showDrawer = showDrawer;
+            window.saveLayup = saveLayup;
+            window.closeDetailModal = closeDetailModal;
+            window.openDetailModal = openDetailModal;
+            window.closeDeleteModal = closeDeleteModal;
+            window.viewLayup = viewLayup;
+            window.openEditDrawer = openEditDrawer;
+            window.deleteLayup = deleteLayup;
+            window.setSupplierFilter = setSupplierFilter;
         </script>
     @endpush
 </x-app-layout>

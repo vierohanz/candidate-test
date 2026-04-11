@@ -73,12 +73,8 @@
         </div>
     </div>
 
-    <div id="toast"
-        class="fixed bottom-8 right-8 z-[60] bg-[rgb(var(--brand))] text-white px-5 py-3 rounded-md shadow-xl text-sm font-semibold opacity-0 translate-y-4 transition-all">
-        <span id="toastMsg">Success</span>
-    </div>
 
-    <!-- Detail Viewer Modal -->
+
     <div id="detailModal" class="fixed inset-0 z-[100] overflow-hidden hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-md opacity-0 transition-opacity" id="detailBackdrop"
             onclick="closeDetailModal()"></div>
@@ -106,10 +102,8 @@
         </div>
     </div>
 
-    <!-- Hidden file input for import -->
     <input type="file" id="importFile" class="hidden" accept=".json">
 
-    <!-- Import Conflict Modal -->
     <div id="importConflictModal" class="fixed inset-0 z-[100] overflow-hidden hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-md opacity-0 transition-opacity" id="conflictBackdrop"
             onclick="closeConflictModal()"></div>
@@ -200,14 +194,14 @@
                     }
                 } else {
                     grid.innerHTML = Array(8).fill(`
-                        <div class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-5 w-full transition-colors">
-                            <div class="flex flex-col items-center mt-3 mb-2">
-                                <div class="h-14 w-14 rounded-full skeleton-loader mb-4"></div>
-                                <div class="h-4 w-32 skeleton-loader rounded mb-3"></div>
-                                <div class="h-3 w-16 skeleton-loader rounded"></div>
-                            </div>
-                        </div>
-                    `).join('');
+                                            <div class="bg-[rgb(var(--card-bg))] border border-[rgb(var(--line-color))] rounded-xl p-5 w-full transition-colors">
+                                                <div class="flex flex-col items-center mt-3 mb-2">
+                                                    <div class="h-14 w-14 rounded-full skeleton-loader mb-4"></div>
+                                                    <div class="h-4 w-32 skeleton-loader rounded mb-3"></div>
+                                                    <div class="h-3 w-16 skeleton-loader rounded"></div>
+                                                </div>
+                                            </div>
+                                        `).join('');
                     fetchSuppliersData(page, grid, cacheKey, true);
                 }
             }
@@ -227,40 +221,71 @@
             function renderSuppliersDom(grid, data, meta) {
                 if (!Array.isArray(data) || data.length === 0) {
                     grid.innerHTML = `<div class="col-span-full py-20 text-center text-[rgb(var(--text-soft))]">
-                        <svg class="w-10 h-10 opacity-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        <span class="block font-medium text-lg">Data Not Found</span>
-                        <span class="block text-sm mt-1">No suppliers found. Create a new one to get started.</span>
-                    </div>`;
+                                            <svg class="w-10 h-10 opacity-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                            <span class="block font-medium text-lg">Data Not Found</span>
+                                            <span class="block text-sm mt-1">No suppliers found. Create a new one to get started.</span>
+                                        </div>`;
                     updatePagination(meta); return;
                 }
 
                 grid.innerHTML = data.map(d => `
-                    <div class="relative bg-[rgb(var(--app-bg))] border border-[rgb(var(--line-color))] rounded-xl p-5 hover:border-[rgb(var(--text-soft))] transition-colors group">
-                        <!-- Actions Grid (Visible on hover) -->
-                        <div class="absolute top-4 right-4 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                            <button onclick="viewSupplier(${d.id})" title="View Hierarchy" class="p-1.5 text-[rgb(var(--text-soft))] hover:text-blue-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                            <button onclick="exportSupplier(${d.id})" title="Export JSON" class="p-1.5 text-[rgb(var(--text-soft))] hover:text-green-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
-                            <button onclick="triggerImport(${d.id})" title="Import JSON" class="p-1.5 text-[rgb(var(--text-soft))] hover:text-yellow-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></button>
-                            <button onclick="openEditDrawer(${d.id}, '${(d.name || '').replace(/'/g, "\\'")}')" title="Edit" class="p-1.5 text-[rgb(var(--text-soft))] hover:text-[rgb(var(--brand))] transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-                            <button onclick="deleteSupplier(${d.id})" title="Delete" class="p-1.5 text-[rgb(var(--text-soft))] hover:text-red-500 transition rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                        </div>
+                        <div class="group relative bg-[rgb(28,28,28)] border border-[rgb(var(--line-color))] rounded-3xl p-6 hover:border-[rgb(var(--brand))] hover:shadow-2xl hover:shadow-[rgb(var(--brand))]/10 transition-all duration-500 overflow-hidden">
+                            <!-- Background Icon (Office vibe) -->
+                            <div class="absolute -bottom-6 -right-6 text-white/[0.03] group-hover:text-white/[0.08] group-hover:-translate-x-4 group-hover:-translate-y-4 transition-all duration-700 pointer-events-none">
+                                <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
+                                </svg>
+                            </div>
 
-                        <!-- Card Body -->
-                        <div class="flex flex-col items-center text-center mt-3 mb-2">
-                            <div class="h-14 w-14 rounded-full bg-[rgb(var(--brand))/10] text-[rgb(var(--brand))] border border-[rgb(var(--brand))/20] flex items-center justify-center text-xl font-bold mb-4 shadow-sm group-hover:scale-105 transition-transform duration-300">
-                                ${d.name ? d.name.charAt(0).toUpperCase() : '?'}
+                            <!-- Actions Grid (Visible on hover) -->
+                            <div class="absolute top-4 right-4 flex opacity-0 group-hover:opacity-100 transition-all duration-300 gap-1.5 translate-y-2 group-hover:translate-y-0 z-10">
+                                <button onclick="viewSupplier(${d.id})" title="View Hierarchy" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-blue-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
+                                <button onclick="exportSupplier(${d.id})" title="Export JSON" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-emerald-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
+                                <button onclick="triggerImport(${d.id})" title="Import JSON" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-amber-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></button>
+                                <button onclick="openEditDrawer(${d.id}, '${(d.name || '').replace(/'/g, "\\'")}')" title="Edit" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-white backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                <button onclick="deleteSupplier(${d.id})" title="Delete" class="p-2.5 bg-black/40 text-[rgb(var(--text-soft))] hover:text-red-400 backdrop-blur-md rounded-2xl transition-all hover:scale-110"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                             </div>
-                            <h3 class="text-[14px] font-semibold text-[rgb(var(--text-main))] w-full truncate px-2" title="${d.name}">${d.name}</h3>
-                            <div class="mt-2 text-[10px] uppercase font-mono tracking-widest text-[rgb(var(--text-soft))]">
-                                ID / ${d.id}
+
+                            <!-- Card Body -->
+                            <div class="flex flex-col items-center text-center relative z-0">
+                                <div class="h-20 w-20 rounded-[2rem] bg-gradient-to-br from-[rgb(var(--brand))] to-emerald-600 text-white flex items-center justify-center text-3xl font-black mb-6 shadow-2xl shadow-emerald-500/20 group-hover:rotate-6 transition-all duration-500">
+                                    ${d.name ? d.name.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <h3 class="text-lg font-bold text-[rgb(var(--text-main))] w-full truncate px-4 group-hover:text-[rgb(var(--brand))] transition-colors duration-300" title="${d.name}">${d.name}</h3>
+                                <div class="mt-4 flex flex-col items-center gap-1">
+                                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[rgb(var(--text-muted))]">Authorized Partner</span>
+                                    <span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-mono text-[rgb(var(--text-soft))] border border-white/5 backdrop-blur-sm">SUPP-${String(d.id).padStart(4, '0')}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Stats Footer -->
+                            <div class="mt-8 pt-5 border-t border-white/5 flex justify-between items-center relative z-0">
+                                 <div>
+                                    <p class="text-[10px] text-[rgb(var(--text-muted))] font-bold uppercase tracking-widest">Active Layups</p>
+                                    <div class="mt-1 flex items-baseline gap-1">
+                                        <p class="text-xl font-black text-white">${d.layups_count || 0}</p>
+                                        <span class="text-[9px] text-[rgb(var(--brand))] font-bold">UNITS</span>
+                                    </div>
+                                 </div>
+                                 <div class="h-8 w-8 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[rgb(var(--brand))]/20 transition-colors">
+                                    <svg class="w-4 h-4 text-[rgb(var(--text-muted))] group-hover:text-[rgb(var(--brand))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                 </div>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
                 updatePagination(meta);
             }
             function updatePagination(meta) {
-                document.getElementById('paginationInfo').innerText = `Copyright © 2026 CLT Management System`;
+                const total = Number(meta.total_row || 0);
+                const perPage = Number(meta.per_page || 10);
+                const current = Number(meta.current_page || 1);
+                const from = total ? ((current - 1) * perPage) + 1 : 0;
+                const to = total ? Math.min(current * perPage, total) : 0;
+                const info = document.getElementById('paginationInfo');
+                if (info) info.innerText = `Showing ${from}-${to} of ${total} suppliers`;
+
                 const prev = document.getElementById('prevPageBtn'), next = document.getElementById('nextPageBtn');
                 prev.disabled = meta.current_page <= 1; prev.onclick = () => fetchSuppliers(meta.current_page - 1);
                 next.disabled = meta.current_page >= meta.total_page; next.onclick = () => fetchSuppliers(meta.current_page + 1);
@@ -296,7 +321,7 @@
             async function saveSupplier(e) {
                 e.preventDefault(); const id = document.getElementById('supplierId').value, name = document.getElementById('supplierName').value, btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerText = 'Saving...';
                 const url = isEdit ? `{{ url('/api/v1/suppliers') }}/${id}/update` : `{{ url('/api/v1/suppliers') }}`; const method = isEdit ? 'PATCH' : 'POST';
-                try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ name }) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); showToast(isEdit ? 'Updated' : 'Created'); closeDrawer(); fetchSuppliers(currentPage); } catch (err) { showToast(err.message); } finally { btn.disabled = false; btn.innerText = 'Save'; }
+                try { const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ name }) }); const res = await r.json(); if (!r.ok) throw new Error(res.message); window.showToast(res.message, res.success); closeDrawer(); fetchSuppliers(currentPage); } catch (err) { window.showToast(err.message, false); } finally { btn.disabled = false; btn.innerText = 'Save'; }
             }
             let deleteId = null;
             function deleteSupplier(id) {
@@ -310,54 +335,54 @@
                         const r = await fetch(`{{url('/api/v1/suppliers')}}/${deleteId}/delete`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{csrf_token()}}' } });
                         const res = await r.json();
                         if (!r.ok) throw new Error(res.message);
-                        showToast('Supplier Removed');
+                        window.showToast(res.message, res.success);
                         closeDeleteModal();
                         fetchSuppliers(currentPage);
-                    } catch (e) { showToast(e.message); } finally { btn.disabled = false; btn.innerText = 'Delete'; }
+                    } catch (e) { window.showToast(e.message, false); } finally { btn.disabled = false; btn.innerText = 'Delete'; }
                 };
             }
             function closeDeleteModal() {
                 document.getElementById('deleteBackdrop').classList.replace('opacity-100', 'opacity-0'); document.getElementById('deletePanel').classList.add('scale-95', 'opacity-0');
                 setTimeout(() => { document.getElementById('deleteModal').classList.add('hidden'); }, 300);
             }
-            function showToast(m) { const t = document.getElementById('toast'); document.getElementById('toastMsg').innerText = m; t.classList.replace('opacity-0', 'opacity-100'); t.classList.replace('translate-y-4', 'translate-y-0'); setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); t.classList.replace('translate-y-0', 'translate-y-4'); }, 3000); }
+
 
             async function viewSupplier(id) {
                 const r = await fetch(`{{url('/api/v1/suppliers')}}/${id}/show`);
                 const res = await r.json();
-                if (!res.success) { showToast(res.message); return; }
+                if (!res.success) { window.showToast(res.message, false); return; }
 
                 const data = res.data;
                 const content = document.getElementById('detailContent');
 
                 let layupsHtml = (data.layups || []).map(l => `
-                    <div class="flex items-center justify-between p-2.5 bg-black/5 rounded-lg border border-[rgb(var(--line-color))] hover:border-emerald-500/30 transition-colors">
-                        <span class="text-xs font-semibold text-[rgb(var(--text-main))]">${l.name}</span>
-                        <span class="text-[9px] font-mono text-[rgb(var(--text-soft))]">#${l.id}</span>
-                    </div>
-                `).join('');
+                                        <div class="flex items-center justify-between p-2.5 bg-black/5 rounded-lg border border-[rgb(var(--line-color))] hover:border-emerald-500/30 transition-colors">
+                                            <span class="text-xs font-semibold text-[rgb(var(--text-main))]">${l.name}</span>
+                                            <span class="text-[9px] font-mono text-[rgb(var(--text-soft))]">#${l.id}</span>
+                                        </div>
+                                    `).join('');
 
                 if ((data.layups || []).length === 0) layupsHtml = '<p class="text-[11px] text-[rgb(var(--text-soft))] italic">No layups configured yet.</p>';
 
                 content.innerHTML = `
-                    <div class="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl mb-6">
-                        <div class="h-12 w-12 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/20">${data.name.charAt(0)}</div>
-                        <div>
-                            <p class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-0.5">Supplier Identity</p>
-                            <p class="text-xl font-bold text-[rgb(var(--text-main))]">${data.name}</p>
-                        </div>
-                    </div>
+                                        <div class="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl mb-6">
+                                            <div class="h-12 w-12 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/20">${data.name.charAt(0)}</div>
+                                            <div>
+                                                <p class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-0.5">Supplier Identity</p>
+                                                <p class="text-xl font-bold text-[rgb(var(--text-main))]">${data.name}</p>
+                                            </div>
+                                        </div>
 
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-[10px] font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Linked CLT Layups</h4>
-                            <span class="text-[10px] bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full font-bold">${(data.layups || []).length} Sets</span>
-                        </div>
-                        <div class="max-h-[200px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
-                            ${layupsHtml}
-                        </div>
-                    </div>
-                `;
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <h4 class="text-[10px] font-bold text-[rgb(var(--text-soft))] uppercase tracking-widest">Linked CLT Layups</h4>
+                                                <span class="text-[10px] bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full font-bold">${(data.layups || []).length} Sets</span>
+                                            </div>
+                                            <div class="max-h-[200px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                                                ${layupsHtml}
+                                            </div>
+                                        </div>
+                                    `;
                 openDetailModal();
             }
 
@@ -376,7 +401,26 @@
                 setTimeout(() => { document.getElementById('detailModal').classList.add('hidden'); }, 300);
             }
 
-            function exportSupplier(id) { window.open(`{{url('/api/v1/export')}}/${id}`, '_blank'); }
+            async function exportSupplier(id) {
+                window.showToast('Preparing export...', true);
+                try {
+                    const r = await fetch(`{{url('/api/v1/export')}}/${id}`);
+                    if (!r.ok) throw new Error('Export failed');
+                    const blob = await r.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const disposition = r.headers.get('content-disposition');
+                    let filename = `supplier-${id}.json`;
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        const m = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                        if (m && m[1]) filename = m[1].replace(/['"]/g, '');
+                    }
+                    a.href = url; a.download = filename;
+                    document.body.appendChild(a); a.click(); a.remove();
+                    window.URL.revokeObjectURL(url);
+                    window.showToast('Export downloaded', true);
+                } catch (e) { window.showToast(e.message, false); }
+            }
 
             let importSupplierId = null;
             let activeImportToken = null;
@@ -388,11 +432,11 @@
                 try {
                     const r = await fetch(`{{url('/api/v1/suppliers')}}/${importSupplierId}/import/scan`, { method: 'POST', body: fd, headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{csrf_token()}}' } });
                     const res = await r.json(); if (!r.ok) throw new Error(res.message);
-                    if (res.data && res.data.auto_confirmed) { showToast('Clean Data! Imported automatically.'); fetchSuppliers(currentPage); }
+                    if (res.data && res.data.auto_confirmed) { window.showToast(res.message, true); fetchSuppliers(currentPage); }
                     else {
                         openConflictModal(res.data);
                     }
-                } catch (err) { showToast('Import failed: ' + err.message); }
+                } catch (err) { window.showToast('Import failed: ' + err.message, false); }
                 e.target.value = '';
             });
 
@@ -401,63 +445,63 @@
                 const content = document.getElementById('conflictContent');
 
                 let html = `
-                    <div class="grid grid-cols-3 gap-4 mb-8">
-                        <div class="bg-blue-500/5 border border-blue-500/10 p-4 rounded-xl">
-                            <span class="block text-[9px] uppercase tracking-widest text-blue-500 font-bold mb-1">New Layups</span>
-                            <span class="text-2xl font-bold text-[rgb(var(--text-main))]">${data.layups.new.length}</span>
-                        </div>
-                        <div class="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl">
-                            <span class="block text-[9px] uppercase tracking-widest text-amber-500 font-bold mb-1">Layer Conflicts</span>
-                            <span class="text-2xl font-bold text-[rgb(var(--text-main))]">${data.layers.conflicts.length}</span>
-                        </div>
-                        <div class="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-xl">
-                            <span class="block text-[9px] uppercase tracking-widest text-emerald-500 font-bold mb-1">Matched Items</span>
-                            <span class="text-2xl font-bold text-[rgb(var(--text-main))]">${data.layups.matches.length + data.layers.new.length}</span>
-                        </div>
-                    </div>
-                `;
+                                        <div class="grid grid-cols-3 gap-4 mb-8">
+                                            <div class="bg-blue-500/5 border border-blue-500/10 p-4 rounded-xl">
+                                                <span class="block text-[9px] uppercase tracking-widest text-blue-500 font-bold mb-1">New Layups</span>
+                                                <span class="text-2xl font-bold text-[rgb(var(--text-main))]">${data.layups.new.length}</span>
+                                            </div>
+                                            <div class="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl">
+                                                <span class="block text-[9px] uppercase tracking-widest text-amber-500 font-bold mb-1">Layer Conflicts</span>
+                                                <span class="text-2xl font-bold text-[rgb(var(--text-main))]">${data.layers.conflicts.length}</span>
+                                            </div>
+                                            <div class="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-xl">
+                                                <span class="block text-[9px] uppercase tracking-widest text-emerald-500 font-bold mb-1">Matched Items</span>
+                                                <span class="text-2xl font-bold text-[rgb(var(--text-main))]">${data.layups.matches.length + data.layers.new.length}</span>
+                                            </div>
+                                        </div>
+                                    `;
 
                 if (data.layers.conflicts.length > 0) {
                     html += `<h4 class="text-xs font-bold text-amber-500 mb-4 flex items-center gap-2 uppercase tracking-tight">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        Parameter Differences Detected
-                    </h4>`;
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                            Parameter Differences Detected
+                                        </h4>`;
 
                     html += `<div class="space-y-4">`;
                     data.layers.conflicts.forEach(c => {
                         const isDiff = (a, b) => a != b ? 'text-amber-500 font-bold underline decoration-amber-500/50 underline-offset-4' : '';
                         html += `
-                            <div class="border border-[rgb(var(--line-color))] rounded-xl overflow-hidden shadow-sm">
-                                <div class="bg-black/5 px-4 py-2 border-b border-[rgb(var(--line-color))] flex justify-between items-center transition-colors">
-                                    <span class="text-[11px] font-bold text-[rgb(var(--text-main))] uppercase tracking-wide">Layup: ${c.layup_name} — Order #${c.layer_order}</span>
-                                </div>
-                                <div class="grid grid-cols-2">
-                                    <div class="p-4 border-r border-[rgb(var(--line-color))] bg-red-500/[0.02]">
-                                        <span class="text-[8px] font-bold text-red-500 uppercase tracking-widest block mb-3">System (Current)</span>
-                                        <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
-                                            <div class="flex justify-between"><span>Thickness</span> <span class="font-mono">${c.existing.thickness} mm</span></div>
-                                            <div class="flex justify-between"><span>Width</span> <span class="font-mono">${c.existing.width} mm</span></div>
-                                            <div class="flex justify-between"><span>Angle</span> <span class="font-mono">${c.existing.angle}°</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="p-4 bg-emerald-500/[0.02]">
-                                        <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-widest block mb-3">Incoming (File)</span>
-                                        <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
-                                            <div class="flex justify-between"><span>Thickness</span> <span class="font-mono ${isDiff(c.incoming.thickness, c.existing.thickness)}">${c.incoming.thickness} mm</span></div>
-                                            <div class="flex justify-between"><span>Width</span> <span class="font-mono ${isDiff(c.incoming.width, c.existing.width)}">${c.incoming.width} mm</span></div>
-                                            <div class="flex justify-between"><span>Angle</span> <span class="font-mono ${isDiff(c.incoming.angle, c.existing.angle)}">${c.incoming.angle}°</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+                                                <div class="border border-[rgb(var(--line-color))] rounded-xl overflow-hidden shadow-sm">
+                                                    <div class="bg-black/5 px-4 py-2 border-b border-[rgb(var(--line-color))] flex justify-between items-center transition-colors">
+                                                        <span class="text-[11px] font-bold text-[rgb(var(--text-main))] uppercase tracking-wide">Layup: ${c.layup_name} — Order #${c.layer_order}</span>
+                                                    </div>
+                                                    <div class="grid grid-cols-2">
+                                                        <div class="p-4 border-r border-[rgb(var(--line-color))] bg-red-500/[0.02]">
+                                                            <span class="text-[8px] font-bold text-red-500 uppercase tracking-widest block mb-3">System (Current)</span>
+                                                            <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
+                                                                <div class="flex justify-between"><span>Thickness</span> <span class="font-mono">${c.existing.thickness} mm</span></div>
+                                                                <div class="flex justify-between"><span>Width</span> <span class="font-mono">${c.existing.width} mm</span></div>
+                                                                <div class="flex justify-between"><span>Angle</span> <span class="font-mono">${c.existing.angle}°</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="p-4 bg-emerald-500/[0.02]">
+                                                            <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-widest block mb-3">Incoming (File)</span>
+                                                            <div class="space-y-1.5 text-xs text-[rgb(var(--text-main))]">
+                                                                <div class="flex justify-between"><span>Thickness</span> <span class="font-mono ${isDiff(c.incoming.thickness, c.existing.thickness)}">${c.incoming.thickness} mm</span></div>
+                                                                <div class="flex justify-between"><span>Width</span> <span class="font-mono ${isDiff(c.incoming.width, c.existing.width)}">${c.incoming.width} mm</span></div>
+                                                                <div class="flex justify-between"><span>Angle</span> <span class="font-mono ${isDiff(c.incoming.angle, c.existing.angle)}">${c.incoming.angle}°</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `;
                     });
                     html += `</div>`;
                 } else {
                     html += `<div class="py-10 text-center text-[rgb(var(--text-soft))] border-2 border-dashed border-[rgb(var(--line-color))] rounded-2xl">
-                        <p class="font-medium text-sm">No direct conflicts found.</p>
-                        <p class="text-[10px] mt-1">Found ${data.layups.matches.length} matching entities that will be updated or reused.</p>
-                    </div>`;
+                                            <p class="font-medium text-sm">No direct conflicts found.</p>
+                                            <p class="text-[10px] mt-1">Found ${data.layups.matches.length} matching entities that will be updated or reused.</p>
+                                        </div>`;
                 }
 
                 content.innerHTML = html;
@@ -490,7 +534,7 @@
                         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{csrf_token()}}' }
                     });
                     const res = await r.json(); if (!r.ok) throw new Error(res.message);
-                    showToast(`Success: ${strategy === 'overwrite' ? 'Merged & Overwritten' : 'Conflicts Skipped'}`);
+                    window.showToast(res.message, res.success);
                     closeConflictModal();
                     fetchSuppliers(currentPage);
                 } catch (e) { alert(e.message); }

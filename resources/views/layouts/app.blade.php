@@ -357,7 +357,51 @@
         window.addEventListener('popstate', () => {
             navigateTo(window.location.href, { pushState: false });
         });
+
+        let _toastTimer = null;
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('global-toast');
+            const toastMsg = document.getElementById('global-toast-msg');
+            const toastIcon = document.getElementById('global-toast-icon');
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerText = message || (isSuccess ? 'Success' : 'Error');
+            
+            if (isSuccess) {
+                toast.classList.remove('bg-red-500/90', 'border-red-500/20');
+                toast.classList.add('bg-[rgb(var(--brand))]/90', 'border-emerald-500/20');
+                if (toastIcon) toastIcon.innerHTML = `<svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
+            } else {
+                toast.classList.remove('bg-[rgb(var(--brand))]/90', 'border-emerald-500/20');
+                toast.classList.add('bg-red-500/90', 'border-red-500/20');
+                if (toastIcon) toastIcon.innerHTML = `<svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.replace('opacity-0', 'opacity-100');
+                toast.classList.replace('-translate-y-4', 'translate-y-0');
+            }, 10);
+
+            if (_toastTimer) clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => {
+                toast.classList.replace('opacity-100', 'opacity-0');
+                toast.classList.replace('translate-y-0', '-translate-y-4');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 4000);
+        }
+        window.showToast = showToast;
     </script>
+    
+    <div id="global-toast"
+        class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-[rgb(var(--brand))]/90 backdrop-blur-md border border-white/10 text-white px-6 py-4 rounded-2xl shadow-xl text-sm font-bold opacity-0 -translate-y-4 transition-all duration-300 pointer-events-none flex items-center gap-3 hidden min-w-[300px] justify-center text-center">
+        <div id="global-toast-icon" class="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div>
+            <span id="global-toast-msg">Success</span>
+        </div>
+    </div>
 </body>
 
 </html>
