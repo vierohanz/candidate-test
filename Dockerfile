@@ -1,13 +1,23 @@
-FROM nginx:1.27-alpine
+FROM node:20-alpine AS builder
 
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-RUN rm -rf ./*
+COPY package.json package-lock.json ./
+RUN npm ci
 
 COPY index.html ./
 COPY js ./js
 COPY images ./images
 COPY model ./model
+
+RUN npm run build
+
+FROM nginx:1.27-alpine
+
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+
+COPY --from=builder /app/dist ./
 
 EXPOSE 80
 

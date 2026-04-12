@@ -17,6 +17,7 @@ export class SceneCore {
         this.fillLight = null;
         this.rimLight = null;
         this.shadowCatcher = null;
+        this.cameraTransition = null;
 
         this.init();
     }
@@ -27,7 +28,7 @@ export class SceneCore {
         this.renderer.setClearColor(0x000000, 1);
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.12;
+        this.renderer.toneMappingExposure = 0.9;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.container.appendChild(this.renderer.domElement);
@@ -66,9 +67,9 @@ export class SceneCore {
     }
 
     addLights() {
-        this.scene.add(new THREE.AmbientLight(0xffffff, 1.15));
+        this.scene.add(new THREE.AmbientLight(0xffffff, 0.72));
 
-        this.keyLight = new THREE.DirectionalLight(0xfff6e4, 2.6);
+        this.keyLight = new THREE.DirectionalLight(0xfff6e4, 1.75);
         this.keyLight.position.set(5, 7, 4);
         this.keyLight.castShadow = true;
         this.keyLight.shadow.mapSize.set(2048, 2048);
@@ -82,11 +83,11 @@ export class SceneCore {
         this.keyLight.shadow.camera.bottom = -6;
         this.scene.add(this.keyLight);
 
-        this.fillLight = new THREE.DirectionalLight(0xe7f2ff, 0.7);
+        this.fillLight = new THREE.DirectionalLight(0xe7f2ff, 0.42);
         this.fillLight.position.set(-4, 3, -5);
         this.scene.add(this.fillLight);
 
-        this.rimLight = new THREE.DirectionalLight(0xffe1b0, 0.55);
+        this.rimLight = new THREE.DirectionalLight(0xffe1b0, 0.32);
         this.rimLight.position.set(-2, 5, 6);
         this.scene.add(this.rimLight);
     }
@@ -110,9 +111,42 @@ export class SceneCore {
     }
 
     render() {
+        if (this.cameraTransition) {
+            const now = performance.now();
+            const progress = Math.min((now - this.cameraTransition.startTime) / this.cameraTransition.duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+
+            this.camera.position.lerpVectors(
+                this.cameraTransition.fromPosition,
+                this.cameraTransition.toPosition,
+                eased
+            );
+
+            this.controls.target.lerpVectors(
+                this.cameraTransition.fromTarget,
+                this.cameraTransition.toTarget,
+                eased
+            );
+
+            if (progress >= 1) {
+                this.cameraTransition = null;
+            }
+        }
+
         if (this.onAnimate) this.onAnimate();
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
+    }
+
+    animateCameraTo(position, target, duration = 1600) {
+        this.cameraTransition = {
+            startTime: performance.now(),
+            duration,
+            fromPosition: this.camera.position.clone(),
+            toPosition: position.clone(),
+            fromTarget: this.controls.target.clone(),
+            toTarget: target.clone(),
+        };
     }
 
     start() {

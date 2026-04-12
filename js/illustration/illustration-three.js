@@ -89,8 +89,12 @@ function frameScene() {
         core.axisGroup.position.set(xR, 0, D.b2L);
         core.axisGroup.rotation.y = Math.PI / 2;
     }
-    core.controls.target.set(0.78, 0.22, 1.35);
-    core.camera.position.set(4.6, 3.4, 4.9);
+
+    const focusTarget = new THREE.Vector3(0.78, 0.22, 1.35);
+    const finalCameraPosition = new THREE.Vector3(3.1, 2.3, 3.2);
+    core.camera.position.set(7.5, 5.8, 7.8);
+    core.controls.target.set(1.5, 0.5, 1.9);
+    core.animateCameraTo(finalCameraPosition, focusTarget, 1800);
     core.controls.update();
 }
 
