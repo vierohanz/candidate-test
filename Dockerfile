@@ -2,8 +2,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json ./
+RUN npm install
 
 COPY index.html ./
 COPY js ./js
@@ -18,6 +18,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 COPY --from=builder /app/dist ./
+COPY --from=builder /app/model ./model
 
 EXPOSE 80
 
