@@ -90,7 +90,7 @@ function frameScene() {
         core.axisGroup.rotation.y = Math.PI / 2;
     }
     core.controls.target.set(0.78, 0.22, 1.35);
-    core.camera.position.set(5, 5, 5); 
+    core.camera.position.set(4.6, 3.4, 4.9);
     core.controls.update();
 }
 

@@ -41,7 +41,15 @@ export class WoodMaterials {
             nrm.wrapS = nrm.wrapT = THREE.RepeatWrapping;
             nrm.repeat.set(rx, ry); nrm.center.set(0.5, 0.5); nrm.rotation = rot;
 
-            return new THREE.MeshStandardMaterial({ color, map, normalMap: nrm, roughness: 0.74, metalness: 0.02 });
+            return new THREE.MeshStandardMaterial({
+                color,
+                map,
+                normalMap: nrm,
+                normalScale: new THREE.Vector2(0.45, 0.45),
+                roughness: 0.68,
+                metalness: 0.02,
+                envMapIntensity: 0.45,
+            });
         };
         return [
             face(d*g, h*g*0.8), face(d*g, h*g*0.8),
@@ -51,6 +59,9 @@ export class WoodMaterials {
     }
 
     createBlock(w, h, d, maps) {
-        return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), this.createWoodMats(maps, w, h, d));
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), this.createWoodMats(maps, w, h, d));
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        return mesh;
     }
 }
