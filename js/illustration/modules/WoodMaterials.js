@@ -31,50 +31,44 @@ export class WoodMaterials {
     }
 
     createWoodMats(maps, w, h, d, posX = 0, posZ = 0) {
-        const g = 1.6; 
+        const g = 1.35; // Lower density for a more premium look
         const x0 = posX - w / 2;
         const z0 = posZ - d / 2;
         
-        const face = (width, len, color = 0xffffff, ox = 0, oy = 0) => {
+        const createMat = (rx, ry, rot, color, ox, oy) => {
             const map = maps.map.clone();
             map.wrapS = map.wrapT = THREE.RepeatWrapping;
-            map.repeat.set(width * g, len * g); 
+            map.repeat.set(rx * g, ry * g);
+            map.rotation = rot;
             map.center.set(0.5, 0.5);
-            map.rotation = Math.PI / 2; 
             map.offset.set(ox % 1, oy % 1);
             
             const nrm = maps.normalMap.clone();
             nrm.wrapS = nrm.wrapT = THREE.RepeatWrapping;
-            nrm.repeat.set(width * g, len * g);
+            nrm.repeat.set(rx * g, ry * g);
+            nrm.rotation = rot;
             nrm.center.set(0.5, 0.5);
-            nrm.rotation = Math.PI / 2;
             nrm.offset.set(ox % 1, oy % 1);
 
             return new THREE.MeshStandardMaterial({
                 color,
                 map,
                 normalMap: nrm,
-                normalScale: new THREE.Vector2(0.35, 0.35),
-                roughness: 0.7,
-                metalness: 0.05,
+                normalScale: new THREE.Vector2(0.32, 0.32),
+                roughness: 0.75,
+                metalness: 0.04,
             });
         };
 
-        const end = (width, height, color = 0xffffff, ox = 0, oy = 0) => {
-            const map = maps.map.clone();
-            map.wrapS = map.wrapT = THREE.RepeatWrapping;
-            map.repeat.set(width * g, height * g);
-            map.offset.set(ox % 1, oy % 1);
-            return new THREE.MeshStandardMaterial({ color, map, roughness: 0.8 });
-        };
-
         return [
-            face(h, d, 0xffffff, 0, z0 * g),      // +X (Side)
-            face(h, d, 0xffffff, 0, z0 * g),      // -X (Side)
-            face(w, d, 0xf6ead1, x0 * g, z0 * g), // +Y (Top)
-            face(w, d, 0x8c7246, x0 * g, z0 * g), // -Y (Bottom)
-            end(w, h, 0xffffff, x0 * g, 0),      // +Z (End)
-            end(w, h, 0xffffff, x0 * g, 0),      // -Z (End)
+            createMat(d, h, 0, 0xffffff, z0 * g, 0),               
+            createMat(d, h, 0, 0xffffff, z0 * g, 0),               
+            
+            createMat(w, d, Math.PI / 2, 0xf1e7d2, x0 * g, z0 * g), 
+            createMat(w, d, Math.PI / 2, 0x937d63, x0 * g, z0 * g), 
+            
+            createMat(w, h, 0, 0xffffff, x0 * g, 0),               
+            createMat(w, h, 0, 0xffffff, x0 * g, 0),               
         ];
     }
 
