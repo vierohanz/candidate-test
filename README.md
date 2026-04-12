@@ -8,6 +8,8 @@ A Three.js technical visualization project that renders a timber beam compositio
 
 [View Live Demo](https://test-three.raishannan.com)
 
+[View Video](https://drive.google.com/file/d/1MuYabteEp97P4jMyTsRXCVGci1Wxpy5s/view?usp=drive_link)
+
 ## Highlights
 
 - Parametric beam modeling driven by configurable dimensions and offsets
@@ -98,7 +100,3 @@ Open:
 ```text
 http://localhost:8080
 ```
-
-## Final Preview
-
-<video src="images/3d-test.mp4" controls muted playsinline width="100%"></video>
