@@ -54,16 +54,13 @@ async function init() {
     const illustration = new THREE.Group();
     core.scene.add(illustration);
 
-    const beam1 = wood.createBlock(D.b1W, D.h, D.b1L, maps);
-    beam1.position.set(D.b1W / 2, D.h / 2, D.b1L / 2);
+    const beam1 = wood.createBlock(D.b1W, D.h, D.b1L, maps, D.b1W / 2, D.h / 2, D.b1L / 2);
     illustration.add(beam1);
 
-    const beam2 = wood.createBlock(D.b2W, D.h, D.b2L, maps);
-    beam2.position.set(xJ + D.b2W / 2, D.h / 2, D.b2L / 2);
+    const beam2 = wood.createBlock(D.b2W, D.h, D.b2L, maps, xJ + D.b2W / 2, D.h / 2, D.b2L / 2);
     illustration.add(beam2);
 
-    const beam3 = wood.createBlock(D.b3W, D.b3H, D.b3L, maps);
-    beam3.position.set(b3CX, D.h + D.b3H / 2, b3CZ);
+    const beam3 = wood.createBlock(D.b3W, D.b3H, D.b3L, maps, b3CX, D.h + D.b3H / 2, b3CZ);
     illustration.add(beam3);
 
     dims.occluders.push(beam1, beam2, beam3);

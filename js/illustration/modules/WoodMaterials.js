@@ -30,36 +30,57 @@ export class WoodMaterials {
         });
     }
 
-    createWoodMats(maps, w, h, d) {
-        const g = 4.5;
-        const face = (rx, ry, rot = 0, color = 0xffffff) => {
-            const map = maps.map.clone(); map.needsUpdate = true;
+    createWoodMats(maps, w, h, d, posX = 0, posZ = 0) {
+        const g = 1.6; 
+        const x0 = posX - w / 2;
+        const z0 = posZ - d / 2;
+        
+        const face = (width, len, color = 0xffffff, ox = 0, oy = 0) => {
+            const map = maps.map.clone();
             map.wrapS = map.wrapT = THREE.RepeatWrapping;
-            map.repeat.set(rx, ry); map.center.set(0.5, 0.5); map.rotation = rot;
+            map.repeat.set(width * g, len * g); 
+            map.center.set(0.5, 0.5);
+            map.rotation = Math.PI / 2; 
+            map.offset.set(ox % 1, oy % 1);
             
-            const nrm = maps.normalMap.clone(); nrm.needsUpdate = true;
+            const nrm = maps.normalMap.clone();
             nrm.wrapS = nrm.wrapT = THREE.RepeatWrapping;
-            nrm.repeat.set(rx, ry); nrm.center.set(0.5, 0.5); nrm.rotation = rot;
+            nrm.repeat.set(width * g, len * g);
+            nrm.center.set(0.5, 0.5);
+            nrm.rotation = Math.PI / 2;
+            nrm.offset.set(ox % 1, oy % 1);
 
             return new THREE.MeshStandardMaterial({
                 color,
                 map,
                 normalMap: nrm,
-                normalScale: new THREE.Vector2(0.45, 0.45),
-                roughness: 0.68,
-                metalness: 0.02,
-                envMapIntensity: 0.45,
+                normalScale: new THREE.Vector2(0.35, 0.35),
+                roughness: 0.7,
+                metalness: 0.05,
             });
         };
+
+        const end = (width, height, color = 0xffffff, ox = 0, oy = 0) => {
+            const map = maps.map.clone();
+            map.wrapS = map.wrapT = THREE.RepeatWrapping;
+            map.repeat.set(width * g, height * g);
+            map.offset.set(ox % 1, oy % 1);
+            return new THREE.MeshStandardMaterial({ color, map, roughness: 0.8 });
+        };
+
         return [
-            face(d*g, h*g*0.8), face(d*g, h*g*0.8),
-            face(d*g, w*g, Math.PI/2, 0xf6ead1), face(d*g, w*g, Math.PI/2, 0x8c7246),
-            face(w*g, h*g*0.8), face(w*g, h*g*0.8),
+            face(h, d, 0xffffff, 0, z0 * g),      // +X (Side)
+            face(h, d, 0xffffff, 0, z0 * g),      // -X (Side)
+            face(w, d, 0xf6ead1, x0 * g, z0 * g), // +Y (Top)
+            face(w, d, 0x8c7246, x0 * g, z0 * g), // -Y (Bottom)
+            end(w, h, 0xffffff, x0 * g, 0),      // +Z (End)
+            end(w, h, 0xffffff, x0 * g, 0),      // -Z (End)
         ];
     }
 
-    createBlock(w, h, d, maps) {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), this.createWoodMats(maps, w, h, d));
+    createBlock(w, h, d, maps, x = 0, y = 0, z = 0) {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), this.createWoodMats(maps, w, h, d, x, z));
+        mesh.position.set(x, y, z);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         return mesh;
