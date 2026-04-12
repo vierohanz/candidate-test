@@ -4,10 +4,188 @@
 		<meta charset="utf-8">
 		<title>3D Illustration Test</title>
 		<style>
-			body { margin: 0; }
+			:root {
+				--bg: #0c0c0c;
+				--paper: #f1e7d2;
+				--panel: #111111;
+				--panel-border: #f1e7d2;
+				--text: #f1e7d2;
+				--muted: rgba(241, 231, 210, 0.72);
+				--accent: #e4572e;
+				--accent-alt: #f3a712;
+				--accent-soft: rgba(228, 87, 46, 0.14);
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html, body {
+				margin: 0;
+				width: 100%;
+				height: 100%;
+				background:
+					linear-gradient(0deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.02)),
+					var(--bg);
+				overflow: hidden;
+				font-family: "Arial Black", Impact, "Segoe UI", sans-serif;
+			}
+
+			#illustration-3d-container {
+				width: 100vw;
+				height: 100vh;
+			}
+
+			.splash-screen {
+				position: fixed;
+				inset: 0;
+				z-index: 50;
+				display: grid;
+				place-items: center;
+				padding: 24px;
+				background:
+					linear-gradient(135deg, transparent 0 47%, rgba(243, 167, 18, 0.18) 47% 53%, transparent 53%),
+					linear-gradient(0deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.82)),
+					var(--bg);
+				transition: opacity 0.7s ease, visibility 0.7s ease;
+			}
+
+			.splash-screen.is-hidden {
+				opacity: 0;
+				visibility: hidden;
+				pointer-events: none;
+			}
+
+			.splash-card {
+				position: relative;
+				width: min(460px, 100%);
+				padding: 28px 28px 22px;
+				border-radius: 0;
+				background: var(--panel);
+				border: 3px solid var(--panel-border);
+				box-shadow:
+					12px 12px 0 var(--accent),
+					24px 24px 0 rgba(243, 167, 18, 0.22);
+				overflow: hidden;
+			}
+
+			.splash-card::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				right: 0;
+				width: 92px;
+				height: 92px;
+				background: var(--accent);
+				clip-path: polygon(100% 0, 0 0, 100% 100%);
+			}
+
+			.splash-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 6px 12px;
+				border-radius: 0;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: #111111;
+				background: var(--paper);
+				border: 2px solid var(--paper);
+			}
+
+			.splash-title {
+				margin: 18px 0 10px;
+				font-size: clamp(28px, 5vw, 42px);
+				font-weight: 800;
+				line-height: 0.95;
+				letter-spacing: -0.06em;
+				text-transform: uppercase;
+				color: var(--text);
+				max-width: 8ch;
+			}
+
+			.splash-subtitle {
+				margin: 0 0 20px;
+				font-size: 13px;
+				line-height: 1.6;
+				color: var(--muted);
+				max-width: 30ch;
+			}
+
+			.splash-status {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				margin-bottom: 12px;
+				font-size: 12px;
+				color: rgba(241, 231, 210, 0.82);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				font-family: "Segoe UI", sans-serif;
+				font-weight: 700;
+			}
+
+			.splash-progress {
+				position: relative;
+				height: 14px;
+				border-radius: 0;
+				background: rgba(241, 231, 210, 0.08);
+				border: 2px solid var(--paper);
+				overflow: hidden;
+			}
+
+			.splash-progress-bar {
+				position: absolute;
+				inset: 0;
+				width: 34%;
+				border-radius: 0;
+				background:
+					repeating-linear-gradient(
+						-45deg,
+						var(--accent) 0 14px,
+						var(--accent-alt) 14px 28px
+					);
+				animation: load 1.2s linear infinite;
+			}
+
+			.splash-footer {
+				margin-top: 14px;
+				font-size: 12px;
+				color: rgba(241, 231, 210, 0.46);
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+				font-family: "Segoe UI", sans-serif;
+				font-weight: 700;
+			}
+
+			@keyframes load {
+				0% { transform: translateX(-110%); }
+				100% { transform: translateX(260%); }
+			}
 		</style>
 	</head>
 	<body>
+        <div class="splash-screen" id="splash-screen" aria-live="polite">
+            <div class="splash-card">
+                <div class="splash-badge">3D Timber System</div>
+                <h1 class="splash-title">Loading Technical Illustration</h1>
+                <p class="splash-subtitle">
+                    Preparing measured geometry, material logic, and scene presentation for the final render.
+                </p>
+                <div class="splash-status">
+                    <span id="splash-status-text">Initializing scene</span>
+                    <span>Brutalist Load</span>
+                </div>
+                <div class="splash-progress">
+                    <div class="splash-progress-bar"></div>
+                </div>
+                <div class="splash-footer">Structured. Measured. Ready.</div>
+            </div>
+        </div>
+
         <div class="card p-3" id="illustration-3d-container"></div>
 
         <script type="module" src="js/illustration/illustration-three.js"></script>

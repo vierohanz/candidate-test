@@ -29,9 +29,28 @@ const b3CZ = (D.b3Back + (D.b3Back + D.b3L)) / 2;
 const core = new SceneCore('illustration-3d-container');
 const dims = new DimensionSystem(core.scene, core.camera);
 const wood = new WoodMaterials();
+const splashScreen = document.getElementById('splash-screen');
+const splashStatusText = document.getElementById('splash-status-text');
+
+function updateSplashStatus(text) {
+    if (splashStatusText) {
+        splashStatusText.textContent = text;
+    }
+}
+
+function hideSplashScreen() {
+    if (!splashScreen) return;
+
+    splashScreen.classList.add('is-hidden');
+    window.setTimeout(() => {
+        splashScreen.remove();
+    }, 800);
+}
 
 async function init() {
+    updateSplashStatus('Loading wood textures');
     const maps = await wood.loadMaps();
+    updateSplashStatus('Building geometry');
     const illustration = new THREE.Group();
     core.scene.add(illustration);
 
@@ -51,11 +70,13 @@ async function init() {
 
     addDimensions(illustration);
     frameScene();
+    updateSplashStatus('Finalizing presentation');
     
     core.onAnimate = () => {
         dims.update();
     };
     core.start();
+    window.setTimeout(hideSplashScreen, 850);
 }
 
 function addDimensions(group) {
