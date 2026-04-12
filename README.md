@@ -1,36 +1,51 @@
-### Instructions
+# 3D Timber Illustration
 
-* Clone or fork this repository.
-* Create a new branch, `assignment`, for your work.
-* Invite @ikhsan017 to be a collaborator.
+![3D Timber Illustration Preview](images/three-cli.gif)
 
-### Tasks
+A lightweight Three.js-based technical illustration that renders a timber beam composition with measured dimensions, wood materials, axis references, and presentation-focused camera framing.
 
- * Complete the `Illustration` in the file `js/illustration/illustration-three.js` to render a 3D illustration.
- * Use the `three.js` library to proceed with the rendering.
- * The `wood` model is located in the `model/wood` folder, and the model is in the `FBX` format.
- * Finish the task until the illustration resembles the image shown below with the original size.
+## Live Demo
 
-### Expected Result
+https://test-three.raishannan.com
 
-![Expected Result](images/expected-result.jpg)
+## Highlights
 
-### Docker
+- Parametric modeling using configurable beam dimensions and offsets
+- Technical visualization with dimension lines, markers, labels, and XYZ reference axes
+- Occlusion-aware labels that hide automatically when blocked by geometry
+- Modular scene structure for renderer, materials, and annotation logic
+- Static deployment support via Docker and Nginx
 
-Build image:
+## Visual Pipeline
+
+1. Input dimensions define the beam sizes and offsets.
+2. Geometry is generated for the three timber blocks.
+3. Wood materials are applied using texture and normal maps.
+4. Dimension annotations are added to key measurement points.
+5. Camera, lighting, shadows, and axes complete the presentation layer.
+
+## Local Preview
+
+The project is a static frontend and can be opened through a local HTTP server.
+
+Using Node:
 
 ```bash
-docker build -t candidate-test .
+npx serve .
 ```
 
-Run container:
+Using Python:
 
 ```bash
-docker run --rm -p 8080:80 candidate-test
+python -m http.server 3000
 ```
 
-Open:
+Then open:
 
 ```text
-http://localhost:8080
+http://localhost:3000
 ```
+
+## Reference Target
+
+![Expected Result](images/expected-result.jpg)
