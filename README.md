@@ -14,3 +14,23 @@
 ### Expected Result
 
 ![Expected Result](images/expected-result.jpg)
+
+### Docker
+
+Build image:
+
+```bash
+docker build -t candidate-test .
+```
+
+Run container:
+
+```bash
+docker run --rm -p 8080:80 candidate-test
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
